@@ -62,7 +62,7 @@ function buildManifestEntryFromPackage(pkg, id, filePath) {
     id,
     file: toPosixPath(path.relative(root, filePath)),
     title: pkg.title || pkg.name || id,
-    difficulty: pkg.difficulty || 1,
+    difficulty: Math.max(1, Math.min(3, pkg.difficulty || 1)),
     tags: pkg.tags || [],
     description: pkg.description || '',
   };

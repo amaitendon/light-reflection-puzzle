@@ -20,7 +20,7 @@ async function loadOfficialStages() {
           return {
             id: meta.id,
             title: meta.title || data.name,
-            difficulty: meta.difficulty || 1,
+            difficulty: Math.max(1, Math.min(3, meta.difficulty || 1)),
             tags: meta.tags || [],
             description: meta.description || '',
             level: data.level,

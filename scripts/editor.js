@@ -16,6 +16,8 @@ let sourceRotatable = false;
 
 let isDragging = false;
 let lastErasedCell = null;
+const MIN_BOARD_SIZE = 3;
+const MAX_BOARD_SIZE = 14;
 
 const gridE = $('#gridE');
 const boardE = $('#boardE');
@@ -201,7 +203,7 @@ $('#sizeUp').addEventListener('click', () => setDraftSize(draft.size + 1));
 $('#sizeDown').addEventListener('click', () => setDraftSize(draft.size - 1));
 
 function setDraftSize(n){
-  n = Math.max(5, Math.min(14, n));
+  n = Math.max(MIN_BOARD_SIZE, Math.min(MAX_BOARD_SIZE, n));
   draft.size = n;
   draft.walls = draft.walls.filter(w => w[0]<n && w[1]<n);
   draft.elements = draft.elements.filter(e => e.x<n && e.y<n);
@@ -525,7 +527,7 @@ function applyStagePayload(payload){
   const name = payload.name || payload.title || '';
   $('#nameInput').value = name;
   if (payload.description !== undefined) $('#officialDesc').value = payload.description || '';
-  if (payload.difficulty !== undefined) $('#officialDifficulty').value = String(payload.difficulty || 1);
+  if (payload.difficulty !== undefined) $('#officialDifficulty').value = String(Math.max(1, Math.min(3, payload.difficulty || 1)));
   if (payload.tags !== undefined) {
     const tags = Array.isArray(payload.tags) ? payload.tags : parseTagsInput(payload.tags);
     $('#officialTags').value = tags.join(', ');

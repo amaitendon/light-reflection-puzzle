@@ -4,13 +4,14 @@
 const OFFICIAL_FORMAT = 'official-stage';
 
 function buildOfficialPackage({ id, title, description, difficulty, tags, name, level }) {
+  const clampedDifficulty = Math.max(1, Math.min(3, difficulty || 1));
   return {
     format: OFFICIAL_FORMAT,
     version: 1,
     id,
     title: title || name || '無題のステージ',
     description: description || '',
-    difficulty: Math.max(1, Math.min(5, difficulty || 1)),
+    difficulty: clampedDifficulty,
     tags: Array.isArray(tags) ? tags : [],
     name: name || title || '無題のステージ',
     level,
