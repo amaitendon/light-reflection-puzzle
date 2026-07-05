@@ -8,6 +8,7 @@ function nextId(){ return 'e'+(seq++); }
 let currentTool = 'wall';
 let currentDir = 'right';
 let currentColor = 7;
+let mirrorOrient = 45;
 let mirrorRotatable = true;
 let mirrorDoubleSided = true;
 let mirrorFilterEnabled = false;
@@ -29,6 +30,7 @@ const dirRow = $('#dirRow');
 const colorRow = $('#colorRow');
 const colorPicker = $('#colorPicker');
 const mirrorSettingsRow = $('#mirrorSettingsRow');
+const mirrorOrientPicker = $('#mirrorOrientPicker');
 const mirrorRotatableCheck = $('#mirrorRotatable');
 const mirrorDoubleSidedCheck = $('#mirrorDoubleSided');
 const mirrorFilterEnabledCheck = $('#mirrorFilterEnabled');
@@ -88,6 +90,26 @@ COLORS.forEach(c => {
   mirrorFilterColorPicker.appendChild(b);
 });
 mirrorFilterColorPicker.children[mirrorFilterColorPicker.children.length-1].classList.add('active'); // default white
+
+function setMirrorOrientActive(angle){
+  document.querySelectorAll('#mirrorOrientPicker .dir-picker button').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.orient, 10) === angle);
+  });
+}
+
+MIRROR_ROTATION_STEPS.forEach(angle => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.textContent = `${angle}°`;
+  b.title = `${angle}°`;
+  b.dataset.orient = String(angle);
+  b.addEventListener('click', () => {
+    mirrorOrient = angle;
+    document.querySelectorAll('#mirrorOrientPicker .dir-picker button').forEach(x=>x.classList.toggle('active', x===b));
+  });
+  mirrorOrientPicker.appendChild(b);
+});
+setMirrorOrientActive(mirrorOrient);
 
 document.querySelectorAll('.tool-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -236,6 +258,8 @@ function onEditorCellClick(x,y){
         const cur = normalizeMirrorAngle(elHere.orient);
         const idx = MIRROR_ROTATION_STEPS.indexOf(cur);
         elHere.orient = MIRROR_ROTATION_STEPS[(idx + 1) % MIRROR_ROTATION_STEPS.length];
+      } else {
+        elHere.orient = mirrorOrient;
       }
     } else {
       clearCellInDraft(x,y);
@@ -243,7 +267,7 @@ function onEditorCellClick(x,y){
         id:nextId(),
         kind:'mirror',
         x, y,
-        orient: 45,
+        orient: mirrorOrient,
         rotatable: mirrorRotatable,
         doubleSided: mirrorDoubleSided,
         filterColor: mirrorFilterEnabled ? mirrorFilterColor : null
