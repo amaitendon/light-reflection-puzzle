@@ -1,6 +1,43 @@
 /* ================= beam engine ================= */
 const DIRS = { right:[1,0], left:[-1,0], down:[0,1], up:[0,-1] };
 const DIR_ANGLE = { right:0, down:90, left:180, up:270 };
+const MIRROR_ROTATION_STEPS = [0, 45, 90, 135, 180, 225, 270, 315];
+
+function normalizeMirrorAngle(angle) {
+  let raw = angle;
+  if (raw === '/') raw = 135;
+  else if (raw === '\\') raw = 45;
+  const numeric = Number(raw);
+  const base = Number.isFinite(numeric) ? numeric : 45;
+  const snapped = Math.round(base / 45) * 45;
+  const normalized = snapped % 360;
+  return normalized < 0 ? normalized + 360 : normalized;
+}
+
+function angleToVector(angle) {
+  const rad = angle * Math.PI / 180;
+  return [Math.cos(rad), Math.sin(rad)];
+}
+
+function snapCardinal(dx, dy) {
+  if (Math.abs(dx) > Math.abs(dy)) {
+    return [dx >= 0 ? 1 : -1, 0];
+  }
+  return [0, dy >= 0 ? 1 : -1];
+}
+
+function reflectVector(dx, dy, lineAngle) {
+  const [ux, uy] = angleToVector(lineAngle);
+  const dot = dx * ux + dy * uy;
+  const rx = 2 * dot * ux - dx;
+  const ry = 2 * dot * uy - dy;
+  return snapCardinal(rx, ry);
+}
+
+function isFrontSide(dx, dy, lineAngle) {
+  const [nx, ny] = angleToVector(lineAngle + 90);
+  return dx * nx + dy * ny >= -1e-9;
+}
 
 // orient: 0=透過, 45=\相当(90度曲げ), 90=Uターン, 135=/相当(90度曲げ)
 function reflect(dx, dy, orient){
@@ -49,25 +86,24 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
       if (!el) continue;
 
       if (el.kind==='mirror'){
-        const orient = el.rotatable ? mirrorStates[el.id] : el.orient;
-        // orient=0: 全色素通り（filterColor関係なく透過）
-        if (orient === 0){
-          continue; // dx,dy変わらず素通り
-        }
-        // orient=90: 全色Uターン反射（filterColor関係なく反射）
-        if (orient === 90){
-          dx = -dx; dy = -dy;
-          continue;
+        const orient = normalizeMirrorAngle(el.rotatable ? mirrorStates[el.id] : el.orient);
+        const frontSide = isFrontSide(dx, dy, orient);
+        if (el.doubleSided === false && !frontSide){
+          segments.push({pts,color,terminal:'ABSORBED'});
+          return;
         }
         if (el.filterColor){
           const reflectColor = color & el.filterColor;
           const transmitColor = color & (~el.filterColor) & 7;
           segments.push({pts,color,terminal:'SPLIT'});
-          if (reflectColor){ const [rdx,rdy]=reflect(dx,dy,orient); walk(cx,cy,rdx,rdy,reflectColor); }
+          if (reflectColor){
+            const [rdx,rdy]=reflectVector(dx,dy,orient);
+            walk(cx,cy,rdx,rdy,reflectColor);
+          }
           if (transmitColor){ walk(cx,cy,dx,dy,transmitColor); }
           return;
         } else {
-          const [ndx,ndy] = reflect(dx,dy,orient);
+          const [ndx,ndy] = reflectVector(dx,dy,orient);
           dx = ndx; dy = ndy;
           continue;
         }

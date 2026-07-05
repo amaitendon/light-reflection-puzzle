@@ -9,6 +9,7 @@ let currentTool = 'wall';
 let currentDir = 'right';
 let currentColor = 7;
 let mirrorRotatable = true;
+let mirrorDoubleSided = true;
 let mirrorFilterEnabled = false;
 let mirrorFilterColor = 7;
 let sourceRotatable = true;
@@ -27,6 +28,7 @@ const colorRow = $('#colorRow');
 const colorPicker = $('#colorPicker');
 const mirrorSettingsRow = $('#mirrorSettingsRow');
 const mirrorRotatableCheck = $('#mirrorRotatable');
+const mirrorDoubleSidedCheck = $('#mirrorDoubleSided');
 const mirrorFilterEnabledCheck = $('#mirrorFilterEnabled');
 const mirrorFilterColorPicker = $('#mirrorFilterColorPicker');
 
@@ -105,6 +107,10 @@ document.querySelector('[data-dir="right"]').classList.add('active');
 
 mirrorRotatableCheck.addEventListener('change', () => {
   mirrorRotatable = mirrorRotatableCheck.checked;
+});
+
+mirrorDoubleSidedCheck.addEventListener('change', () => {
+  mirrorDoubleSided = mirrorDoubleSidedCheck.checked;
 });
 
 mirrorFilterEnabledCheck.addEventListener('change', () => {
@@ -220,16 +226,12 @@ function onEditorCellClick(x,y){
   if (currentTool==='mirror'){
     if (elHere && elHere.kind==='mirror'){
       elHere.rotatable = mirrorRotatable;
+      elHere.doubleSided = mirrorDoubleSided;
       elHere.filterColor = mirrorFilterEnabled ? mirrorFilterColor : null;
       if (mirrorRotatable){
-        const STEPS = [0, 45, 90, 135];
-        // orientが文字列なら数値に正規化
-        let cur = elHere.orient;
-        if (cur === '/') cur = 135;
-        else if (cur === '\\') cur = 45;
-        else if (typeof cur !== 'number') cur = 45;
-        const idx = STEPS.indexOf(cur);
-        elHere.orient = STEPS[(idx + 1) % 4];
+        const cur = normalizeMirrorAngle(elHere.orient);
+        const idx = MIRROR_ROTATION_STEPS.indexOf(cur);
+        elHere.orient = MIRROR_ROTATION_STEPS[(idx + 1) % MIRROR_ROTATION_STEPS.length];
       }
     } else {
       clearCellInDraft(x,y);
@@ -239,6 +241,7 @@ function onEditorCellClick(x,y){
         x, y,
         orient: 45,
         rotatable: mirrorRotatable,
+        doubleSided: mirrorDoubleSided,
         filterColor: mirrorFilterEnabled ? mirrorFilterColor : null
       });
     }
@@ -298,29 +301,35 @@ function onEditorCellClick(x,y){
 
 function renderElementVisual(cell, kind, opts){
   if (kind==='mirror'){
-    cell.classList.add('mirror-cell', opts.rotatable ? 'movable' : 'fixed');
+    const lineAngle = normalizeMirrorAngle(opts.orient);
+    cell.classList.add('mirror-cell', opts.rotatable ? 'movable' : 'fixed', opts.doubleSided === false ? 'single-sided' : 'double-sided');
     const wrap = el('mirror-wrap');
     const line = el('mirror-line');
-    // orientを数値に正規化
-    let orient = opts.orient;
-    if (orient === '/') orient = 135;
-    else if (orient === '\\') orient = 45;
-    else if (typeof orient !== 'number') orient = 45;
-    const deg = orient; // 0/45/90/135
-    
+    line.dataset.deg = lineAngle;
     if (opts.filterColor){
       const hex = COLOR_HEX[opts.filterColor];
       const tint = el('half-tint'); tint.style.background = hex; wrap.appendChild(tint);
       line.style.background = `linear-gradient(90deg, #ffffff, ${hex})`;
       line.style.boxShadow = `0 0 10px ${hex}`;
     } else {
-      line.style.background = opts.rotatable ? 'linear-gradient(90deg, #eafcff, var(--cyan))' : 'linear-gradient(90deg, #ffe4bd, var(--brass))';
-      line.style.boxShadow = opts.rotatable ? '0 0 10px var(--cyan-soft), 0 0 2px #fff' : '0 0 8px rgba(201,149,92,0.5)';
+      line.style.background = opts.doubleSided === false
+        ? 'linear-gradient(90deg, #ffe4bd, var(--brass))'
+        : 'linear-gradient(90deg, #eafcff, var(--cyan))';
+      line.style.boxShadow = opts.doubleSided === false
+        ? '0 0 8px rgba(201,149,92,0.5)'
+        : '0 0 10px var(--cyan-soft), 0 0 2px #fff';
     }
-    
-    line.style.transform = `rotate(${deg}deg)`;
-    line.dataset.deg = deg;
+
+    line.style.transform = `rotate(${lineAngle}deg)`;
     wrap.appendChild(line);
+    const frontAngle = lineAngle + 90;
+    const backAngle = frontAngle + 180;
+    const front = el('mirror-side front');
+    front.style.setProperty('--marker-angle', `${frontAngle}deg`);
+    wrap.appendChild(front);
+    const back = el('mirror-side back');
+    back.style.setProperty('--marker-angle', `${backAngle}deg`);
+    wrap.appendChild(back);
     if (opts.rotatable){ wrap.appendChild(el('mirror-ring')); }
     else {
       const badge = el('lock-badge'); badge.textContent='🔒'; wrap.appendChild(badge);
@@ -537,13 +546,13 @@ function migrateLegacyData(level){
   level.elements = level.elements.map(e => {
     if (e.kind==='mirror'){
       if (e.type==='M'){
-        return { ...e, rotatable: true, filterColor: null };
+        return { ...e, rotatable: true, doubleSided: true, filterColor: null };
       } else if (e.type==='F'){
-        return { ...e, rotatable: false, filterColor: null };
+        return { ...e, rotatable: false, doubleSided: true, filterColor: null };
       }
     }
     if (e.kind==='halfmirror'){
-      return { ...e, kind: 'mirror', rotatable: true, filterColor: e.color };
+      return { ...e, kind: 'mirror', rotatable: true, doubleSided: true, filterColor: e.color };
     }
     if (e.kind==='converter'){
       return {
@@ -563,4 +572,3 @@ function migrateLegacyData(level){
     });
   }
 }
-

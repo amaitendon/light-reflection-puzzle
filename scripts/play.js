@@ -59,13 +59,13 @@ function migrateLegacyData(level){
   level.elements = level.elements.map(e => {
     if (e.kind==='mirror'){
       if (e.type==='M'){
-        return { ...e, rotatable: true, filterColor: null };
+        return { ...e, rotatable: true, doubleSided: true, filterColor: null };
       } else if (e.type==='F'){
-        return { ...e, rotatable: false, filterColor: null };
+        return { ...e, rotatable: false, doubleSided: true, filterColor: null };
       }
     }
     if (e.kind==='halfmirror'){
-      return { ...e, kind: 'mirror', rotatable: true, filterColor: e.color };
+      return { ...e, kind: 'mirror', rotatable: true, doubleSided: true, filterColor: e.color };
     }
     return e;
   });
@@ -89,12 +89,7 @@ function loadLevel(level, name, savedId, isTest){
   sourceStates = {};
   levelCopy.elements.forEach(e => {
     if (e.kind==='mirror' && e.rotatable) {
-      // /\を数値に変換、すでに数値ならそのまま使う
-      let o = e.orient;
-      if (o === '/') o = 135;
-      else if (o === '\\') o = 45;
-      else if (typeof o !== 'number') o = 45;
-      mirrorStates[e.id] = o;
+      mirrorStates[e.id] = normalizeMirrorAngle(e.orient);
     }
     if (e.kind==='converter') converterStates[e.id] = (e.enabled !== false);
   });
@@ -167,13 +162,11 @@ function buildPlayBoard(level){
 }
 
 function rotateMirror(id, lineEl){
-  const STEPS = [0, 45, 90, 135];
-  const cur = mirrorStates[id];
-  const idx = STEPS.indexOf(cur);
-  const next = STEPS[(idx + 1) % 4];
-  lineEl.style.transform = `rotate(${next}deg)`;
-  lineEl.dataset.deg = next;
+  const cur = normalizeMirrorAngle(mirrorStates[id]);
+  const idx = MIRROR_ROTATION_STEPS.indexOf(cur);
+  const next = MIRROR_ROTATION_STEPS[(idx + 1) % MIRROR_ROTATION_STEPS.length];
   mirrorStates[id] = next;
+  buildPlayBoard(currentLevel);
   recompute();
 }
 
