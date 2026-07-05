@@ -22,7 +22,7 @@ const dirRow = $('#dirRow');
 const colorRow = $('#colorRow');
 const colorPicker = $('#colorPicker');
 
-const NEEDS_COLOR = new Set(['source','goal','filter','converter','halfmirror']);
+const NEEDS_COLOR = new Set(['source','goal','converter','halfmirror']);
 
 COLORS.forEach(c => {
   const b = document.createElement('button');
@@ -182,12 +182,12 @@ function onEditorCellClick(x,y){
     renderEditor(); return;
   }
 
-  if (currentTool==='filter' || currentTool==='converter'){
-    if (elHere && elHere.kind===currentTool){
+  if (currentTool==='converter'){
+    if (elHere && elHere.kind==='converter'){
       elHere.color = currentColor;
     } else {
       clearCellInDraft(x,y);
-      draft.elements.push({id:nextId(), kind:currentTool, x, y, color:currentColor});
+      draft.elements.push({id:nextId(), kind:'converter', x, y, color:currentColor});
     }
     renderEditor(); return;
   }
@@ -238,15 +238,6 @@ function renderElementVisual(cell, kind, opts){
     wrap.appendChild(el('mirror-ring'));
     cell.appendChild(wrap);
     return line;
-  }
-  if (kind==='filter'){
-    const hex = COLOR_HEX[opts.color];
-    const panel = el('filter-panel');
-    panel.style.background = hex + 'aa';
-    panel.style.color = '#0a0e16';
-    panel.textContent = 'F';
-    cell.appendChild(panel);
-    return null;
   }
   if (kind==='converter'){
     const hex = COLOR_HEX[opts.color];

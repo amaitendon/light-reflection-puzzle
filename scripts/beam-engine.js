@@ -45,12 +45,6 @@ function traceAll(level, mirrorStates){
         [dx,dy] = reflect(dx,dy,orient);
         continue;
       }
-      if (el.kind==='filter'){
-        const nc = color & el.color;
-        if (nc===0){ segments.push({pts,color,terminal:'ABSORB'}); return; }
-        color = nc;
-        continue;
-      }
       if (el.kind==='converter'){ color = el.color; continue; }
       if (el.kind==='halfmirror'){
         const orient = mirrorStates[el.id];
