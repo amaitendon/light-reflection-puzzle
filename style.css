@@ -122,11 +122,7 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
 .tool-btn.active{ border-color:var(--cyan); color:var(--cyan); background:rgba(99,230,255,0.08); box-shadow:0 0 8px var(--cyan-soft); }
 .tool-swatch{ width:16px; height:16px; border-radius:3px; flex:0 0 auto; position:relative; background:var(--panel-3); border:1px solid var(--line-strong); }
 .tool-swatch.wall{ background:repeating-linear-gradient(135deg, var(--brass-dark), var(--brass-dark) 2px, #3a2a18 2px, #3a2a18 4px); }
-.tool-swatch.mirror-m::after, .tool-swatch.mirror-f::after{ content:""; position:absolute; top:50%; left:5%; width:90%; height:2px; transform:translateY(-50%) rotate(-45deg); border-radius:1px; }
-.tool-swatch.mirror-m::after{ background:var(--cyan); }
-.tool-swatch.mirror-f::after{ background:var(--brass); }
-.tool-swatch.halfmirror{ background:linear-gradient(90deg, rgba(255,255,255,0.5), rgba(255,90,90,0.5)); }
-.tool-swatch.halfmirror::after{ content:""; position:absolute; top:50%; left:5%; width:90%; height:2px; background:#fff; transform:translateY(-50%) rotate(-45deg); }
+.tool-swatch.mirror::after{ content:""; position:absolute; top:50%; left:5%; width:90%; height:2px; transform:translateY(-50%) rotate(-45deg); border-radius:1px; background:var(--cyan); }
 .tool-swatch.filter{ background:linear-gradient(135deg, rgba(90,255,160,0.6), rgba(90,255,160,0.15)); }
 .tool-swatch.converter{ background:linear-gradient(135deg, #666, #ff5ae0); }
 .tool-swatch.source{ background:radial-gradient(circle,#fff,#ff5a5a); }
@@ -137,6 +133,10 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
 .dir-picker, .color-picker{ display:flex; gap:5px; flex-wrap:wrap; }
 .dir-picker button{ width:26px; height:26px; border-radius:6px; border:1px solid var(--line-strong); background:var(--panel-2); color:var(--ink-dim); cursor:pointer; font-size:12px; }
 .dir-picker button.active{ border-color:var(--amber); color:var(--amber); background:rgba(255,180,84,0.1); }
+
+.mirror-settings{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.toggle-label{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-dim); cursor:pointer; }
+.toggle-label input[type="checkbox"]{ width:16px; height:16px; cursor:pointer; }
 .color-swatch-btn{ width:26px; height:26px; border-radius:50%; border:2px solid var(--line-strong); cursor:pointer; }
 .color-swatch-btn.active{ border-color:#fff; box-shadow:0 0 8px rgba(255,255,255,0.6); transform:scale(1.1); }
 

@@ -8,6 +8,9 @@ function nextId(){ return 'e'+(seq++); }
 let currentTool = 'wall';
 let currentDir = 'right';
 let currentColor = 7;
+let mirrorRotatable = true;
+let mirrorFilterEnabled = false;
+let mirrorFilterColor = 7;
 
 let isDragging = false;
 let lastErasedCell = null;
@@ -21,8 +24,12 @@ const editorMsg = $('#editorMsg');
 const dirRow = $('#dirRow');
 const colorRow = $('#colorRow');
 const colorPicker = $('#colorPicker');
+const mirrorSettingsRow = $('#mirrorSettingsRow');
+const mirrorRotatableCheck = $('#mirrorRotatable');
+const mirrorFilterEnabledCheck = $('#mirrorFilterEnabled');
+const mirrorFilterColorPicker = $('#mirrorFilterColorPicker');
 
-const NEEDS_COLOR = new Set(['source','goal','converter','halfmirror']);
+const NEEDS_COLOR = new Set(['source','goal','converter','mirror']);
 
 COLORS.forEach(c => {
   const b = document.createElement('button');
@@ -38,12 +45,27 @@ COLORS.forEach(c => {
 });
 colorPicker.children[colorPicker.children.length-1].classList.add('active'); // default white
 
+COLORS.forEach(c => {
+  const b = document.createElement('button');
+  b.className = 'color-swatch-btn';
+  b.style.background = c.hex;
+  b.title = c.name;
+  b.dataset.bits = c.bits;
+  b.addEventListener('click', () => {
+    mirrorFilterColor = c.bits;
+    document.querySelectorAll('#mirrorFilterColorPicker .color-swatch-btn').forEach(x=>x.classList.toggle('active', x===b));
+  });
+  mirrorFilterColorPicker.appendChild(b);
+});
+mirrorFilterColorPicker.children[mirrorFilterColorPicker.children.length-1].classList.add('active'); // default white
+
 document.querySelectorAll('.tool-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     currentTool = btn.dataset.tool;
     document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b===btn));
     dirRow.style.display = currentTool==='source' ? 'flex' : 'none';
-    colorRow.style.display = NEEDS_COLOR.has(currentTool) ? 'flex' : 'none';
+    colorRow.style.display = NEEDS_COLOR.has(currentTool) && currentTool!=='mirror' ? 'flex' : 'none';
+    mirrorSettingsRow.style.display = currentTool==='mirror' ? 'flex' : 'none';
   });
 });
 document.querySelectorAll('.dir-picker button').forEach(btn => {
@@ -54,6 +76,15 @@ document.querySelectorAll('.dir-picker button').forEach(btn => {
 });
 document.querySelector('[data-tool="wall"]').classList.add('active');
 document.querySelector('[data-dir="right"]').classList.add('active');
+
+mirrorRotatableCheck.addEventListener('change', () => {
+  mirrorRotatable = mirrorRotatableCheck.checked;
+});
+
+mirrorFilterEnabledCheck.addEventListener('change', () => {
+  mirrorFilterEnabled = mirrorFilterEnabledCheck.checked;
+  mirrorFilterColorPicker.style.display = mirrorFilterEnabled ? 'flex' : 'none';
+});
 
 let dragSetupDone = false;
 
@@ -160,24 +191,23 @@ function onEditorCellClick(x,y){
 
   if (currentTool==='wall'){ clearCellInDraft(x,y); draft.walls.push([x,y]); renderEditor(); return; }
 
-  if (currentTool==='mirrorM' || currentTool==='mirrorF'){
-    const wantType = currentTool==='mirrorM' ? 'M' : 'F';
-    if (elHere && elHere.kind==='mirror' && elHere.type===wantType){
-      elHere.orient = elHere.orient==='/' ? '\\' : '/';
+  if (currentTool==='mirror'){
+    if (elHere && elHere.kind==='mirror'){
+      elHere.rotatable = mirrorRotatable;
+      elHere.filterColor = mirrorFilterEnabled ? mirrorFilterColor : null;
+      if (mirrorRotatable){
+        elHere.orient = elHere.orient==='/' ? '\\' : '/';
+      }
     } else {
       clearCellInDraft(x,y);
-      draft.elements.push({id:nextId(), kind:'mirror', type:wantType, x, y, orient:'/'});
-    }
-    renderEditor(); return;
-  }
-
-  if (currentTool==='halfmirror'){
-    if (elHere && elHere.kind==='halfmirror'){
-      if (elHere.color !== currentColor) elHere.color = currentColor;
-      else elHere.orient = elHere.orient==='/' ? '\\' : '/';
-    } else {
-      clearCellInDraft(x,y);
-      draft.elements.push({id:nextId(), kind:'halfmirror', x, y, orient:'/', color:currentColor});
+      draft.elements.push({
+        id:nextId(),
+        kind:'mirror',
+        x, y,
+        orient:'/',
+        rotatable: mirrorRotatable,
+        filterColor: mirrorFilterEnabled ? mirrorFilterColor : null
+      });
     }
     renderEditor(); return;
   }
@@ -208,34 +238,29 @@ function onEditorCellClick(x,y){
 
 function renderElementVisual(cell, kind, opts){
   if (kind==='mirror'){
-    cell.classList.add('mirror-cell', opts.type==='M' ? 'movable' : 'fixed');
+    cell.classList.add('mirror-cell', opts.rotatable ? 'movable' : 'fixed');
     const wrap = el('mirror-wrap');
     const line = el('mirror-line');
     const deg = opts.orient==='/' ? -45 : 45;
+    
+    if (opts.filterColor){
+      const hex = COLOR_HEX[opts.filterColor];
+      const tint = el('half-tint'); tint.style.background = hex; wrap.appendChild(tint);
+      line.style.background = `linear-gradient(90deg, #ffffff, ${hex})`;
+      line.style.boxShadow = `0 0 10px ${hex}`;
+    } else {
+      line.style.background = opts.rotatable ? 'linear-gradient(90deg, #eafcff, var(--cyan))' : 'linear-gradient(90deg, #ffe4bd, var(--brass))';
+      line.style.boxShadow = opts.rotatable ? '0 0 10px var(--cyan-soft), 0 0 2px #fff' : '0 0 8px rgba(201,149,92,0.5)';
+    }
+    
     line.style.transform = `rotate(${deg}deg)`;
     line.dataset.deg = deg;
     wrap.appendChild(line);
-    if (opts.type==='M'){ wrap.appendChild(el('mirror-ring')); }
+    if (opts.rotatable){ wrap.appendChild(el('mirror-ring')); }
     else {
       const badge = el('lock-badge'); badge.textContent='🔒'; wrap.appendChild(badge);
       wrap.appendChild(el('rivet tl')); wrap.appendChild(el('rivet br'));
     }
-    cell.appendChild(wrap);
-    return line;
-  }
-  if (kind==='halfmirror'){
-    cell.classList.add('movable');
-    const hex = COLOR_HEX[opts.color];
-    const wrap = el('mirror-wrap');
-    const tint = el('half-tint'); tint.style.background = hex; wrap.appendChild(tint);
-    const line = el('mirror-line');
-    line.style.background = `linear-gradient(90deg, #ffffff, ${hex})`;
-    line.style.boxShadow = `0 0 10px ${hex}`;
-    const deg = opts.orient==='/' ? -45 : 45;
-    line.style.transform = `rotate(${deg}deg)`;
-    line.dataset.deg = deg;
-    wrap.appendChild(line);
-    wrap.appendChild(el('mirror-ring'));
     cell.appendChild(wrap);
     return line;
   }
@@ -392,7 +417,24 @@ function decodeCode(code){
   const json = decodeURIComponent(escape(atob(code.trim())));
   const payload = JSON.parse(json);
   if (!payload || !payload.level || !payload.level.sources || !payload.level.goals) throw new Error('invalid');
+  migrateLegacyData(payload.level);
   return payload;
+}
+
+function migrateLegacyData(level){
+  level.elements = level.elements.map(e => {
+    if (e.kind==='mirror'){
+      if (e.type==='M'){
+        return { ...e, rotatable: true, filterColor: null };
+      } else if (e.type==='F'){
+        return { ...e, rotatable: false, filterColor: null };
+      }
+    }
+    if (e.kind==='halfmirror'){
+      return { ...e, kind: 'mirror', rotatable: true, filterColor: e.color };
+    }
+    return e;
+  });
 }
 
 $('#importBtn').addEventListener('click', () => {

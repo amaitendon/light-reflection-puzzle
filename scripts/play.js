@@ -47,12 +47,14 @@ function renderStageList(){
     item.querySelector('.sub').textContent = `${entry.level.size}×${entry.level.size} ・ 光源${entry.level.sources.length} ・ ゴール${entry.level.goals.length}`;
     item.querySelector('[data-act="play"]').addEventListener('click', () => loadLevel(entry.level, entry.name, entry.id, false));
     item.querySelector('[data-act="edit"]').addEventListener('click', () => {
+      const level = JSON.parse(JSON.stringify(entry.level));
+      migrateLegacyData(level);
       draft = {
-        size: entry.level.size,
-        walls: entry.level.walls.map(w=>w.slice()),
-        elements: entry.level.elements.map(e=>Object.assign({}, e)),
-        sources: entry.level.sources.map(s=>Object.assign({}, s)),
-        goals: entry.level.goals.map(g=>Object.assign({}, g)),
+        size: level.size,
+        walls: level.walls.map(w=>w.slice()),
+        elements: level.elements.map(e=>Object.assign({}, e)),
+        sources: level.sources.map(s=>Object.assign({}, s)),
+        goals: level.goals.map(g=>Object.assign({}, g)),
       };
       $('#nameInput').value = entry.name;
       sizeVal.textContent = draft.size + ' × ' + draft.size;
@@ -69,15 +71,33 @@ function renderStageList(){
   });
 }
 
+function migrateLegacyData(level){
+  level.elements = level.elements.map(e => {
+    if (e.kind==='mirror'){
+      if (e.type==='M'){
+        return { ...e, rotatable: true, filterColor: null };
+      } else if (e.type==='F'){
+        return { ...e, rotatable: false, filterColor: null };
+      }
+    }
+    if (e.kind==='halfmirror'){
+      return { ...e, kind: 'mirror', rotatable: true, filterColor: e.color };
+    }
+    return e;
+  });
+}
+
 function loadLevel(level, name, savedId, isTest){
-  currentLevel = level;
+  const levelCopy = JSON.parse(JSON.stringify(level));
+  migrateLegacyData(levelCopy);
+  currentLevel = levelCopy;
   currentMeta = { name, savedId, isTest };
   mirrorStates = {};
-  level.elements.forEach(e => {
-    if ((e.kind==='mirror' && e.type==='M') || e.kind==='halfmirror') mirrorStates[e.id] = e.orient;
+  levelCopy.elements.forEach(e => {
+    if (e.kind==='mirror' && e.rotatable) mirrorStates[e.id] = e.orient;
   });
   playTitle.textContent = (isTest ? '🧪 テスト：' : '') + name;
-  buildPlayBoard(level);
+  buildPlayBoard(levelCopy);
   recompute();
   showPlayBoard();
 }
@@ -117,10 +137,10 @@ function buildPlayBoard(level){
 
   level.elements.forEach(e => {
     const cell = cellMapP[e.x+','+e.y];
-    const orient = e.kind==='mirror' ? (e.type==='M'?mirrorStates[e.id]:e.orient) : (e.kind==='halfmirror'?mirrorStates[e.id]:undefined);
+    const orient = e.kind==='mirror' && e.rotatable ? mirrorStates[e.id] : e.orient;
     const opts = Object.assign({}, e, orient!==undefined?{orient}:{});
     const line = renderElementVisual(cell, e.kind, opts);
-    if (line && ((e.kind==='mirror'&&e.type==='M') || e.kind==='halfmirror')){
+    if (line && e.kind==='mirror' && e.rotatable){
       cell.addEventListener('click', () => rotateMirror(e.id, line));
     }
   });

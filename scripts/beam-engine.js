@@ -41,20 +41,20 @@ function traceAll(level, mirrorStates){
       if (!el) continue;
 
       if (el.kind==='mirror'){
-        const orient = el.type==='M' ? mirrorStates[el.id] : el.orient;
-        [dx,dy] = reflect(dx,dy,orient);
-        continue;
+        const orient = el.rotatable ? mirrorStates[el.id] : el.orient;
+        if (el.filterColor){
+          const reflectColor = color & el.filterColor;
+          const transmitColor = color & (~el.filterColor) & 7;
+          segments.push({pts,color,terminal:'SPLIT'});
+          if (reflectColor){ const [rdx,rdy]=reflect(dx,dy,orient); walk(cx,cy,rdx,rdy,reflectColor); }
+          if (transmitColor){ walk(cx,cy,dx,dy,transmitColor); }
+          return;
+        } else {
+          [dx,dy] = reflect(dx,dy,orient);
+          continue;
+        }
       }
       if (el.kind==='converter'){ color = el.color; continue; }
-      if (el.kind==='halfmirror'){
-        const orient = mirrorStates[el.id];
-        const reflectColor = color & el.color;
-        const transmitColor = color & (~el.color) & 7;
-        segments.push({pts,color,terminal:'SPLIT'});
-        if (reflectColor){ const [rdx,rdy]=reflect(dx,dy,orient); walk(cx,cy,rdx,rdy,reflectColor); }
-        if (transmitColor){ walk(cx,cy,dx,dy,transmitColor); }
-        return;
-      }
     }
   }
 
