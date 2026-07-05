@@ -97,30 +97,25 @@ function loadLevel(level, name, savedId, isTest){
     if (s.rotatable) sourceStates[s.id] = s.dir;
   });
   playTitle.textContent = (isTest ? '🧪 テスト：' : '') + name;
+  // 盤面のサイズ計算は board-wrap が実際に表示された(display:none が解除された)後に行う必要がある
+  showPlayBoard();
   buildPlayBoard(levelCopy);
   recompute();
-  showPlayBoard();
 }
 
 function buildPlayBoard(level){
   const size = level.size;
-  const wrapWidth = Math.min(560, (document.querySelector('.board-wrap').clientWidth - 40) || 480);
-  cellPxP = Math.max(26, Math.min(84, Math.floor(wrapWidth / size)));
-  const total = cellPxP * size;
-
-  gridP.style.gridTemplateColumns = `repeat(${size}, ${cellPxP}px)`;
-  gridP.style.gridTemplateRows = `repeat(${size}, ${cellPxP}px)`;
-  gridP.style.width = total+'px'; gridP.style.height = total+'px';
-  boardP.style.width = total+'px'; boardP.style.height = total+'px';
-  svgEl.setAttribute('viewBox', `0 0 ${total} ${total}`);
-  svgEl.style.width = total+'px'; svgEl.style.height = total+'px';
-
-  rulerTop.innerHTML=''; rulerLeft.innerHTML='';
-  rulerTop.style.width = total+'px'; rulerLeft.style.height = total+'px';
-  for (let i=0;i<size;i++){
-    const t=document.createElement('span'); t.textContent = i%2===0?i:''; rulerTop.appendChild(t);
-    const l=document.createElement('span'); l.textContent = i%2===0?i:''; rulerLeft.appendChild(l);
-  }
+  const { cellPx } = layoutBoard({
+    wrapEl: boardP.closest('.board-wrap'),
+    gridEl: gridP,
+    boardEl: boardP,
+    rulerTopEl: rulerTop,
+    rulerLeftEl: rulerLeft,
+    svgEl: svgEl,
+    size,
+    maxCellPx: 84,
+  });
+  cellPxP = cellPx;
 
   gridP.innerHTML = '';
   cellMapP = {};

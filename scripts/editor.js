@@ -453,21 +453,15 @@ function buildCellVisual(cell, x, y){
 
 function renderEditor(){
   const size = draft.size;
-  const wrapWidth = Math.min(560, (document.querySelector('.board-wrap').clientWidth - 40) || 480);
-  const cellPx = Math.max(26, Math.min(68, Math.floor(wrapWidth / size)));
-  const total = cellPx * size;
-
-  gridE.style.gridTemplateColumns = `repeat(${size}, ${cellPx}px)`;
-  gridE.style.gridTemplateRows = `repeat(${size}, ${cellPx}px)`;
-  gridE.style.width = total+'px'; gridE.style.height = total+'px';
-  boardE.style.width = total+'px'; boardE.style.height = total+'px';
-
-  rulerTopE.innerHTML=''; rulerLeftE.innerHTML='';
-  rulerTopE.style.width = total+'px'; rulerLeftE.style.height = total+'px';
-  for (let i=0;i<size;i++){
-    const t=document.createElement('span'); t.textContent = i%2===0?i:''; rulerTopE.appendChild(t);
-    const l=document.createElement('span'); l.textContent = i%2===0?i:''; rulerLeftE.appendChild(l);
-  }
+  layoutBoard({
+    wrapEl: boardE.closest('.board-wrap'),
+    gridEl: gridE,
+    boardEl: boardE,
+    rulerTopEl: rulerTopE,
+    rulerLeftEl: rulerLeftE,
+    size,
+    maxCellPx: 68,
+  });
 
   gridE.innerHTML = '';
   for (let yy=0; yy<size; yy++){

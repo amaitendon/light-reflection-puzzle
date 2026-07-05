@@ -10,6 +10,9 @@ function showTab(which){
   panelEditor.classList.toggle('active', which==='editor');
   panelPlay.classList.toggle('active', which==='play');
   if (which==='play') showPlayList();
+  // パネルが表示状態(display)になった直後に呼ぶことで、
+  // board-wrap の幅が 0 のまま盤面サイズが計算されてしまうのを防ぐ
+  if (which==='editor') renderEditor();
 }
 tabEditorBtn.addEventListener('click', () => showTab('editor'));
 tabPlayBtn.addEventListener('click', () => showTab('play'));
@@ -24,8 +27,6 @@ window.addEventListener('resize', () => {
 
 /* ================= init ================= */
 (async function init(){
-  renderEditor();
-
   const stageId = getStageIdFromUrl();
   const mode = getModeFromUrl();
 
