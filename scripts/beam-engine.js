@@ -57,7 +57,18 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
       if (el.kind==='converter'){
         const isEnabled = (converterStates && el.id in converterStates) ? converterStates[el.id] : (el.enabled !== false);
         if (isEnabled) {
-          color = el.color;
+          const type = el.type || 'replace';
+          if (type === 'add') {
+            color = color | el.color;
+          } else if (type === 'remove') {
+            color = color & (~el.color) & 7;
+          } else {
+            color = el.color;
+          }
+          if (color === 0) {
+            segments.push({pts, color: 0, terminal: 'ABSORBED'});
+            return;
+          }
         }
         continue;
       }

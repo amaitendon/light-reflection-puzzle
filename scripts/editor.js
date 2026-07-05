@@ -31,11 +31,19 @@ const mirrorFilterEnabledCheck = $('#mirrorFilterEnabled');
 const mirrorFilterColorPicker = $('#mirrorFilterColorPicker');
 
 let converterInteractive = true;
+let converterType = 'replace';
 const converterSettingsRow = $('#converterSettingsRow');
 const converterInteractiveCheck = $('#converterInteractive');
 
 converterInteractiveCheck.addEventListener('change', () => {
   converterInteractive = converterInteractiveCheck.checked;
+});
+document.querySelectorAll('input[name="converterType"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    if (radio.checked) {
+      converterType = radio.value;
+    }
+  });
 });
 
 const sourceSettingsRow = $('#sourceSettingsRow');
@@ -234,6 +242,7 @@ function onEditorCellClick(x,y){
     if (elHere && elHere.kind==='converter'){
       elHere.color = currentColor;
       elHere.interactive = converterInteractive;
+      elHere.type = converterType;
     } else {
       clearCellInDraft(x,y);
       draft.elements.push({
@@ -242,6 +251,7 @@ function onEditorCellClick(x,y){
         x, y,
         color:currentColor,
         interactive: converterInteractive,
+        type: converterType,
         enabled: true
       });
     }
@@ -315,7 +325,12 @@ function renderElementVisual(cell, kind, opts){
     const hex = COLOR_HEX[opts.color];
     const panel = el('converter-panel');
     panel.style.background = `linear-gradient(135deg, #3a4152 30%, ${hex})`;
-    panel.textContent = '⇄';
+    
+    let symbol = '⇄';
+    if (opts.type === 'add') symbol = '＋';
+    else if (opts.type === 'remove') symbol = '−';
+    panel.textContent = symbol;
+
     if (opts.enabled === false) {
       panel.classList.add('disabled');
     }
@@ -499,6 +514,13 @@ function migrateLegacyData(level){
     }
     if (e.kind==='halfmirror'){
       return { ...e, kind: 'mirror', rotatable: true, filterColor: e.color };
+    }
+    if (e.kind==='converter'){
+      return {
+        type: 'replace',
+        interactive: true,
+        ...e
+      };
     }
     return e;
   });

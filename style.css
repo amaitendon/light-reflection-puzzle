@@ -170,7 +170,7 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
 
 .mirror-settings, .source-settings{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
 .toggle-label{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-dim); cursor:pointer; }
-.toggle-label input[type="checkbox"]{ width:16px; height:16px; cursor:pointer; }
+.toggle-label input[type="checkbox"], .toggle-label input[type="radio"]{ width:16px; height:16px; cursor:pointer; }
 .color-swatch-btn{ width:26px; height:26px; border-radius:50%; border:2px solid var(--line-strong); cursor:pointer; }
 .color-swatch-btn.active{ border-color:#fff; box-shadow:0 0 8px rgba(255,255,255,0.6); transform:scale(1.1); }
 

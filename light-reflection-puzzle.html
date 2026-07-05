@@ -78,10 +78,23 @@
       </div>
       <div class="toolbar-row" id="converterSettingsRow" style="display:none;">
         <span class="toolbar-label">パネル設定</span>
-        <div class="converter-settings">
+        <div class="converter-settings" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
           <label class="toggle-label">
             <input type="checkbox" id="converterInteractive" checked>
             <span>プレイ中にON/OFF可能</span>
+          </label>
+          <span class="toolbar-label" style="margin-left: 10px;">変換タイプ:</span>
+          <label class="toggle-label">
+            <input type="radio" name="converterType" value="replace" checked>
+            <span>変更 (⇄)</span>
+          </label>
+          <label class="toggle-label">
+            <input type="radio" name="converterType" value="add">
+            <span>追加 (＋)</span>
+          </label>
+          <label class="toggle-label">
+            <input type="radio" name="converterType" value="remove">
+            <span>除外 (−)</span>
           </label>
         </div>
       </div>
