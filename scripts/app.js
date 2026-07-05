@@ -27,5 +27,25 @@ window.addEventListener('resize', () => {
   await loadCustomLevels();
   renderEditor();
   renderStageList();
-  showTab('editor');
+
+  const stageId = getStageIdFromUrl();
+  const mode = getModeFromUrl();
+
+  if (stageId) {
+    // URLに ?stage=XXX があれば公式ステージを読み込んでプレイ
+    showTab('play');
+    const stages = await loadOfficialStages();
+    const target = stages.find(s => s.id === stageId);
+    if (target) {
+      migrateLegacyData(target.level);
+      loadLevel(target.level, target.name || target.title, stageId, false);
+    } else {
+      toast('ステージが見つかりませんでした: ' + stageId);
+      showPlayList();
+    }
+  } else if (mode === 'play') {
+    showTab('play');
+  } else {
+    showTab('editor');
+  }
 })();

@@ -120,10 +120,36 @@
     </div>
 
     <div class="toolbar-row">
-      <button id="testPlayBtn" class="btn btn-primary">▶ テストプレイ</button>
-      <button id="exportBtn" class="btn">コードを書き出す</button>
       <input id="nameInput" class="name-input" type="text" placeholder="ステージ名（例：はじめの一歩）" maxlength="24">
+      <button id="testPlayBtn" class="btn btn-primary">▶ テストプレイ</button>
       <button id="saveBtn" class="btn">保存してマイステージへ</button>
+      <button id="exportBtn" class="btn">コードを書き出す</button>
+    </div>
+
+    <div class="toolbar-row official-meta-row">
+      <span class="toolbar-label">公式ステージ情報</span>
+      <label class="meta-field">
+        <span class="meta-label">難易度</span>
+        <select id="officialDifficulty" class="name-input meta-select">
+          <option value="1">★☆☆☆☆</option>
+          <option value="2">★★☆☆☆</option>
+          <option value="3">★★★☆☆</option>
+          <option value="4">★★★★☆</option>
+          <option value="5">★★★★★</option>
+        </select>
+      </label>
+      <label class="meta-field meta-field-grow">
+        <span class="meta-label">タグ</span>
+        <input id="officialTags" class="name-input" type="text" placeholder="ミラー, 色混合（カンマ区切り）" maxlength="40">
+      </label>
+      <label class="meta-field meta-field-grow">
+        <span class="meta-label">説明</span>
+        <input id="officialDesc" class="name-input" type="text" placeholder="トップページに表示する説明文" maxlength="80">
+      </label>
+    </div>
+    <div class="toolbar-row">
+      <button id="exportOfficialBtn" class="btn btn-primary">📦 公式ステージとして書き出す</button>
+      <span class="hint-inline">書き出した JSON をサイト管理者がサーバーに追加すると、トップページの公式ステージ一覧に載ります</span>
     </div>
     <textarea id="exportBox" class="code-box" style="display:none;" readonly></textarea>
 
@@ -182,6 +208,8 @@
 <script src="scripts/beam-engine.js"></script>
 <script src="scripts/ui-utils.js"></script>
 <script src="scripts/storage.js"></script>
+<script src="scripts/official-stage.js"></script>
+<script src="scripts/stages-loader.js"></script>
 <script src="scripts/editor.js"></script>
 <script src="scripts/play.js"></script>
 <script src="scripts/app.js"></script>

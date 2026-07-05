@@ -492,6 +492,22 @@ $('#saveBtn').addEventListener('click', async () => {
   renderStageList();
 });
 
+$('#exportOfficialBtn').addEventListener('click', async () => {
+  if (!validateDraft()) return;
+  const name = $('#nameInput').value.trim() || '無題のステージ';
+  const title = name;
+  const description = $('#officialDesc').value.trim();
+  const difficulty = parseInt($('#officialDifficulty').value, 10) || 1;
+  const tags = parseTagsInput($('#officialTags').value);
+  const level = draftToLevel();
+  try {
+    const pkg = await exportOfficialStageFile({ title, description, difficulty, tags, name, level });
+    toast('「' + pkg.title + '」を書き出しました（' + pkg.id + '）');
+  } catch (e) {
+    toast('書き出しに失敗しました');
+  }
+});
+
 $('#exportBtn').addEventListener('click', () => {
   if (!validateDraft()) return;
   const level = draftToLevel();

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>光の反射 — Light Reflection Puzzle</title>
+<meta name="description" content="光源からゴールへ、鏡と色を駆使して光を届けるパズルゲーム。ステージを選んで挑戦しよう。">
+<link rel="stylesheet" href="style-top.css">
+</head>
+<body>
+
+<!-- 背景アニメーション -->
+<div class="bg-layer">
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-ray"></div>
+  <div class="bg-ray"></div>
+  <div class="bg-ray"></div>
+  <div class="bg-ray"></div>
+  <div class="bg-ray"></div>
+  <div class="bg-ray"></div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- ナビバー -->
+  <nav>
+    <a class="nav-brand" href="index.html">
+      <span class="nav-icon">💡</span>
+      <div>
+        <div class="nav-title">光の反射</div>
+        <div class="nav-sub">LIGHT REFLECTION PUZZLE</div>
+      </div>
+    </a>
+    <div class="nav-cta">
+      <a class="btn-nav primary" href="light-reflection-puzzle.html">✏️ ステージを作る</a>
+    </div>
+  </nav>
+
+  <!-- ヒーロー -->
+  <section class="hero">
+    <div class="hero-badge">✨ Mirror &amp; Color Puzzle</div>
+    <h1 class="hero-title">光を操り、<br>ゴールへ届けろ。</h1>
+    <p class="hero-sub">
+      鏡を回転させて光を反射させ、色を混ぜ合わせてゴールへ届けるパズルゲーム。
+      直感的な操作で奥深い謎解きを楽しもう。
+    </p>
+    <div class="hero-actions">
+      <a class="btn-hero primary" href="#stages">▶ ステージ一覧へ</a>
+      <a class="btn-hero secondary" href="light-reflection-puzzle.html">✏️ ステージを作る</a>
+    </div>
+
+    <!-- デモビジュアル -->
+    <div class="hero-demo">
+      <div class="demo-board">
+        <svg class="demo-svg" viewBox="0 0 330 220" xmlns="http://www.w3.org/2000/svg">
+          <!-- 赤ビーム: 左→中央ミラー -->
+          <path d="M 27 82 L 192 82" stroke="#ff5a5a" stroke-width="3" fill="none" opacity="0.8">
+            <animate attributeName="stroke-dasharray" from="0,999" to="165,0" dur="1.4s" fill="freeze"/>
+          </path>
+          <!-- 赤ビーム: ミラーから下へ -->
+          <path d="M 192 82 L 192 165" stroke="#ff5a5a" stroke-width="3" fill="none" opacity="0.8">
+            <animate attributeName="stroke-dasharray" from="0,999" to="83,0" dur="0.7s" begin="1.4s" fill="freeze"/>
+          </path>
+          <!-- 緑ビーム: 右側から左へ -->
+          <path d="M 303 165 L 192 165" stroke="#5affa0" stroke-width="3" fill="none" opacity="0.8">
+            <animate attributeName="stroke-dasharray" from="0,999" to="111,0" dur="1s" begin="0.5s" fill="freeze"/>
+          </path>
+          <!-- 混合ビーム（黄）: 当たった後のゴール発光 -->
+          <circle cx="192" cy="165" r="12" fill="none" stroke="#ffe75a" stroke-width="2" opacity="0">
+            <animate attributeName="opacity" from="0" to="0.9" begin="2.1s" dur="0.5s" fill="freeze"/>
+            <animate attributeName="r" from="8" to="18" begin="2.1s" dur="0.5s" fill="freeze"/>
+          </circle>
+          <!-- グロー -->
+          <path d="M 27 82 L 192 82 L 192 165" stroke="#ff5a5a" stroke-width="7" fill="none" opacity="0.15" filter="url(#blur)"/>
+          <path d="M 303 165 L 192 165" stroke="#5affa0" stroke-width="7" fill="none" opacity="0.15" filter="url(#blur)"/>
+          <defs>
+            <filter id="blur"><feGaussianBlur stdDeviation="4"/></filter>
+          </defs>
+        </svg>
+
+        <div class="demo-grid">
+          <!-- row 0 -->
+          <div class="demo-cell"></div>
+          <div class="demo-cell"></div>
+          <div class="demo-cell wall"></div>
+          <div class="demo-cell wall"></div>
+          <div class="demo-cell wall"></div>
+          <div class="demo-cell"></div>
+          <!-- row 1 -->
+          <div class="demo-cell source" title="赤光源">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="5" fill="#ff5a5a" opacity="0.9"/>
+              <polygon points="18,11 23,12 18,13" fill="#ff5a5a"/>
+            </svg>
+          </div>
+          <div class="demo-cell"></div>
+          <div class="demo-cell"></div>
+          <div class="demo-cell mirror">
+            <div class="demo-mirror-line"></div>
+          </div>
+          <div class="demo-cell wall"></div>
+          <div class="demo-cell"></div>
+          <!-- row 2 -->
+          <div class="demo-cell"></div>
+          <div class="demo-cell"></div>
+          <div class="demo-cell wall"></div>
+          <div class="demo-cell goal" title="黄ゴール">
+            <div class="demo-target"></div>
+          </div>
+          <div class="demo-cell wall"></div>
+          <div class="demo-cell source-green" title="緑光源">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="5" fill="#5affa0" opacity="0.9"/>
+              <polygon points="6,11 1,12 6,13" fill="#5affa0"/>
+            </svg>
+          </div>
+          <!-- row 3 -->
+          <div class="demo-cell"></div>
+          <div class="demo-cell"></div>
+          <div class="demo-cell wall"></div>
+          <div class="demo-cell wall"></div>
+          <div class="demo-cell wall"></div>
+          <div class="demo-cell"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- フィーチャー -->
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--cyan)">🪞</div>
+      <div class="feature-title">鏡で光を反射</div>
+      <div class="feature-desc">ミラーをクリックして角度を変え、光の進む向きをコントロールしよう。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--gold)">🎨</div>
+      <div class="feature-title">色を混ぜてゴール</div>
+      <div class="feature-desc">赤＋緑＝黄、赤＋青＝紫…複数の光を混ぜ合わせて正確な色を作れ。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--purple)">⚙️</div>
+      <div class="feature-title">色変換パネル</div>
+      <div class="feature-desc">光が通過すると色が変わる特殊パネル。ON/OFFを切り替えて複雑な回路を解こう。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--green)">✏️</div>
+      <div class="feature-title">ステージを作る</div>
+      <div class="feature-desc">エディターで自分だけのステージを設計し、コードで共有しよう。</div>
+    </div>
+  </div>
+
+  <!-- ステージ一覧 -->
+  <section id="stages">
+    <div class="section-header">
+      <h2 class="section-title">公式<span>ステージ</span></h2>
+    </div>
+    <div id="stageGrid" class="stage-grid">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>ステージを読み込み中…</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- フッター -->
+<footer style="position:relative;z-index:1;">
+  <div class="page-wrap" style="padding-top:0;padding-bottom:0;width:100%;max-width:1100px;">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center;">
+      <span>💡 光の反射 — Light Reflection Puzzle</span>
+      <a class="section-link" href="light-reflection-puzzle.html">✏️ ステージを作る</a>
+    </div>
+  </div>
+</footer>
+
+<script src="scripts/stages-loader.js"></script>
+<script>
+/* ================================================
+   トップページ — ステージ一覧読み込み & カード生成
+   ================================================ */
+
+const GAME_URL = 'light-reflection-puzzle.html';
+
+const TAG_CLASS = {
+  'チュートリアル': 'tag-tutorial',
+  'ミラー':        'tag-mirror',
+  '色混合':        'tag-color',
+};
+
+function tagClass(tag) {
+  return TAG_CLASS[tag] || 'tag-default';
+}
+
+function starHTML(difficulty) {
+  const max = 5;
+  let html = '';
+  for (let i = 1; i <= max; i++) {
+    html += `<span class="star ${i <= difficulty ? 'filled' : ''}">★</span>`;
+  }
+  return html;
+}
+
+function createStageCard(stage, index) {
+  const card = document.createElement('div');
+  card.className = 'stage-card';
+
+  const tags = (stage.tags || []).map(t =>
+    `<span class="tag ${tagClass(t)}">${t}</span>`
+  ).join('');
+
+  card.innerHTML = `
+    <div class="card-top">
+      <span class="card-number">STAGE ${String(index + 1).padStart(2, '0')}</span>
+      <div class="card-difficulty">${starHTML(stage.difficulty || 1)}</div>
+    </div>
+    <div class="card-title">${escapeHTML(stage.title)}</div>
+    <div class="card-desc">${escapeHTML(stage.description || '')}</div>
+    <div class="card-tags">${tags}</div>
+    <div class="card-footer">
+      <a class="btn-play" href="${GAME_URL}?stage=${encodeURIComponent(stage.id)}">
+        ▶ プレイ
+      </a>
+    </div>
+  `;
+
+  return card;
+}
+
+function escapeHTML(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function renderStageGrid() {
+  const grid = document.getElementById('stageGrid');
+
+  try {
+    const stages = await loadOfficialStages();
+
+    if (stages.length === 0) {
+      grid.innerHTML = '<div class="empty-state"><span>まだステージがありません。</span></div>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    stages.forEach((stage, i) => {
+      grid.appendChild(createStageCard(stage, i));
+    });
+
+  } catch (e) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <span>⚠️ ステージ一覧を読み込めませんでした。</span>
+        <small style="margin-top:4px;font-size:0.8rem;">ローカルサーバー経由でアクセスしてください（file:// では動作しません）</small>
+      </div>`;
+    console.error(e);
+  }
+}
+
+renderStageGrid();
+</script>
+</body>
+</html>
