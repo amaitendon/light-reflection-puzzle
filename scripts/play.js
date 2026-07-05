@@ -106,7 +106,14 @@ function loadLevel(level, name, savedId, isTest){
   converterStates = {};
   sourceStates = {};
   levelCopy.elements.forEach(e => {
-    if (e.kind==='mirror' && e.rotatable) mirrorStates[e.id] = e.orient;
+    if (e.kind==='mirror' && e.rotatable) {
+      // /\を数値に変換、すでに数値ならそのまま使う
+      let o = e.orient;
+      if (o === '/') o = 135;
+      else if (o === '\\') o = 45;
+      else if (typeof o !== 'number') o = 45;
+      mirrorStates[e.id] = o;
+    }
     if (e.kind==='converter') converterStates[e.id] = (e.enabled !== false);
   });
   levelCopy.sources.forEach(s => {
@@ -178,11 +185,13 @@ function buildPlayBoard(level){
 }
 
 function rotateMirror(id, lineEl){
-  const cur = parseFloat(lineEl.dataset.deg);
-  const next = cur + 90;
+  const STEPS = [0, 45, 90, 135];
+  const cur = mirrorStates[id];
+  const idx = STEPS.indexOf(cur);
+  const next = STEPS[(idx + 1) % 4];
   lineEl.style.transform = `rotate(${next}deg)`;
   lineEl.dataset.deg = next;
-  mirrorStates[id] = (mirrorStates[id]==='/') ? '\\' : '/';
+  mirrorStates[id] = next;
   recompute();
 }
 

@@ -2,7 +2,15 @@
 const DIRS = { right:[1,0], left:[-1,0], down:[0,1], up:[0,-1] };
 const DIR_ANGLE = { right:0, down:90, left:180, up:270 };
 
-function reflect(dx, dy, orient){ return orient==='/' ? [-dy,-dx] : [dy,dx]; }
+// orient: 0=透過, 45=\相当(90度曲げ), 90=Uターン, 135=/相当(90度曲げ)
+function reflect(dx, dy, orient){
+  const a = (orient === undefined || orient === null) ? 45 : orient;
+  if (a === 0)   return [dx, dy];       // 0度: 素通り
+  if (a === 90)  return [-dx, -dy];     // 90度: Uターン反射
+  if (a === 45)  return [dy, dx];       // 45度: \型 90度曲げ
+  if (a === 135) return [-dy, -dx];     // 135度: /型 90度曲げ
+  return [dx, dy]; // fallback
+}
 function rotateCCW(dx,dy){ return [dy,-dx]; }
 function rotateCW(dx,dy){ return [-dy,dx]; }
 
@@ -42,6 +50,15 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
 
       if (el.kind==='mirror'){
         const orient = el.rotatable ? mirrorStates[el.id] : el.orient;
+        // orient=0: 全色素通り（filterColor関係なく透過）
+        if (orient === 0){
+          continue; // dx,dy変わらず素通り
+        }
+        // orient=90: 全色Uターン反射（filterColor関係なく反射）
+        if (orient === 90){
+          dx = -dx; dy = -dy;
+          continue;
+        }
         if (el.filterColor){
           const reflectColor = color & el.filterColor;
           const transmitColor = color & (~el.filterColor) & 7;
@@ -50,7 +67,8 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
           if (transmitColor){ walk(cx,cy,dx,dy,transmitColor); }
           return;
         } else {
-          [dx,dy] = reflect(dx,dy,orient);
+          const [ndx,ndy] = reflect(dx,dy,orient);
+          dx = ndx; dy = ndy;
           continue;
         }
       }

@@ -222,7 +222,14 @@ function onEditorCellClick(x,y){
       elHere.rotatable = mirrorRotatable;
       elHere.filterColor = mirrorFilterEnabled ? mirrorFilterColor : null;
       if (mirrorRotatable){
-        elHere.orient = elHere.orient==='/' ? '\\' : '/';
+        const STEPS = [0, 45, 90, 135];
+        // orientが文字列なら数値に正規化
+        let cur = elHere.orient;
+        if (cur === '/') cur = 135;
+        else if (cur === '\\') cur = 45;
+        else if (typeof cur !== 'number') cur = 45;
+        const idx = STEPS.indexOf(cur);
+        elHere.orient = STEPS[(idx + 1) % 4];
       }
     } else {
       clearCellInDraft(x,y);
@@ -230,7 +237,7 @@ function onEditorCellClick(x,y){
         id:nextId(),
         kind:'mirror',
         x, y,
-        orient:'/',
+        orient: 45,
         rotatable: mirrorRotatable,
         filterColor: mirrorFilterEnabled ? mirrorFilterColor : null
       });
@@ -294,7 +301,12 @@ function renderElementVisual(cell, kind, opts){
     cell.classList.add('mirror-cell', opts.rotatable ? 'movable' : 'fixed');
     const wrap = el('mirror-wrap');
     const line = el('mirror-line');
-    const deg = opts.orient==='/' ? -45 : 45;
+    // orientを数値に正規化
+    let orient = opts.orient;
+    if (orient === '/') orient = 135;
+    else if (orient === '\\') orient = 45;
+    else if (typeof orient !== 'number') orient = 45;
+    const deg = orient; // 0/45/90/135
     
     if (opts.filterColor){
       const hex = COLOR_HEX[opts.filterColor];
