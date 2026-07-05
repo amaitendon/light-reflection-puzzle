@@ -12,7 +12,7 @@ let mirrorRotatable = true;
 let mirrorDoubleSided = true;
 let mirrorFilterEnabled = false;
 let mirrorFilterColor = 7;
-let sourceRotatable = true;
+let sourceRotatable = false;
 
 let isDragging = false;
 let lastErasedCell = null;
@@ -32,7 +32,7 @@ const mirrorDoubleSidedCheck = $('#mirrorDoubleSided');
 const mirrorFilterEnabledCheck = $('#mirrorFilterEnabled');
 const mirrorFilterColorPicker = $('#mirrorFilterColorPicker');
 
-let converterInteractive = true;
+let converterInteractive = false;
 let converterType = 'replace';
 const converterSettingsRow = $('#converterSettingsRow');
 const converterInteractiveCheck = $('#converterInteractive');
@@ -40,6 +40,7 @@ const converterInteractiveCheck = $('#converterInteractive');
 converterInteractiveCheck.addEventListener('change', () => {
   converterInteractive = converterInteractiveCheck.checked;
 });
+converterInteractiveCheck.checked = converterInteractive;
 document.querySelectorAll('input[name="converterType"]').forEach(radio => {
   radio.addEventListener('change', () => {
     if (radio.checked) {
@@ -51,6 +52,7 @@ document.querySelectorAll('input[name="converterType"]').forEach(radio => {
 const sourceSettingsRow = $('#sourceSettingsRow');
 const sourceRotatableCheck = $('#sourceRotatable');
 
+sourceRotatableCheck.checked = sourceRotatable;
 sourceRotatableCheck.addEventListener('change', () => {
   sourceRotatable = sourceRotatableCheck.checked;
 });
