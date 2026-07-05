@@ -191,18 +191,45 @@ function toggleConverter(id, cellEl, panelEl){
 
 function cellCenter(x,y){ return [ x*cellPxP + cellPxP/2, y*cellPxP + cellPxP/2 ]; }
 
+function edgeKeyOf(a, b){
+  // 向きに依存しないキーにする（A→B も B→A も同じ物理経路として扱う）
+  return (a[0] < b[0] || (a[0] === b[0] && a[1] <= b[1]))
+    ? `${a[0]},${a[1]}|${b[0]},${b[1]}`
+    : `${b[0]},${b[1]}|${a[0]},${a[1]}`;
+}
+
 function recompute(){
   const level = currentLevel;
   const { segments, allGoalsMet, goalStates } = traceAll(level, mirrorStates, converterStates, sourceStates);
 
-  let svgParts = '';
+  // 同じ経路（マス目間の同じ辺）を複数の光線が通る場合、色をビットOR合成して混色表示する
+  const edgeColor = new Map();
   segments.forEach(seg => {
-    let d = '';
-    seg.pts.forEach(([x,y],i) => { const [px,py]=cellCenter(x,y); d += (i===0?'M ':'L ')+px+' '+py+' '; });
-    const hex = COLOR_HEX[seg.color] || '#ffffff';
-    svgParts += `<path class="beam-glow" style="stroke:${hex}" d="${d}"></path>`;
-    svgParts += `<path class="beam-core" style="stroke:${hex}; filter:drop-shadow(0 0 4px ${hex})" d="${d}"></path>`;
-    if (['WALL','OUT','ABSORB','LOOP'].includes(seg.terminal)){
+    for (let i = 0; i < seg.pts.length - 1; i++){
+      const key = edgeKeyOf(seg.pts[i], seg.pts[i+1]);
+      edgeColor.set(key, (edgeColor.get(key) || 0) | seg.color);
+    }
+  });
+
+  let svgParts = '';
+  const drawnEdges = new Set();
+  segments.forEach(seg => {
+    for (let i = 0; i < seg.pts.length - 1; i++){
+      const a = seg.pts[i], b = seg.pts[i+1];
+      const key = edgeKeyOf(a, b);
+      if (drawnEdges.has(key)) continue;
+      drawnEdges.add(key);
+      const color = edgeColor.get(key);
+      const hex = COLOR_HEX[color] || '#ffffff';
+      const [ax, ay] = cellCenter(a[0], a[1]);
+      const [bx, by] = cellCenter(b[0], b[1]);
+      const d = `M ${ax} ${ay} L ${bx} ${by}`;
+      svgParts += `<path class="beam-glow" style="stroke:${hex}" d="${d}"></path>`;
+      svgParts += `<path class="beam-core" style="stroke:${hex}; filter:drop-shadow(0 0 4px ${hex})" d="${d}"></path>`;
+    }
+  });
+  segments.forEach(seg => {
+    if (['WALL','OUT','ABSORBED','LOOP'].includes(seg.terminal)){
       const last = seg.pts[seg.pts.length-1];
       const [ex,ey] = cellCenter(last[0], last[1]);
       svgParts += `<circle class="impact-mark" cx="${ex}" cy="${ey}" r="5"></circle>`;
