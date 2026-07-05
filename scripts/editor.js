@@ -9,6 +9,9 @@ let currentTool = 'wall';
 let currentDir = 'right';
 let currentColor = 7;
 
+let isDragging = false;
+let lastErasedCell = null;
+
 const gridE = $('#gridE');
 const boardE = $('#boardE');
 const rulerTopE = $('#rulerTopE');
@@ -51,6 +54,83 @@ document.querySelectorAll('.dir-picker button').forEach(btn => {
 });
 document.querySelector('[data-tool="wall"]').classList.add('active');
 document.querySelector('[data-dir="right"]').classList.add('active');
+
+let dragSetupDone = false;
+
+function setupDragPlacement(){
+  if (dragSetupDone) return;
+  dragSetupDone = true;
+  gridE.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    lastErasedCell = null;
+    const cell = e.target.closest('.cell');
+    if (cell){
+      const x = parseInt(cell.dataset.x);
+      const y = parseInt(cell.dataset.y);
+      onEditorCellClick(x, y);
+      lastErasedCell = `${x},${y}`;
+    }
+  });
+
+  gridE.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const cell = e.target.closest('.cell');
+    if (cell){
+      const x = parseInt(cell.dataset.x);
+      const y = parseInt(cell.dataset.y);
+      const cellKey = `${x},${y}`;
+      if (lastErasedCell !== cellKey){
+        onEditorCellClick(x, y);
+        lastErasedCell = cellKey;
+      }
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    lastErasedCell = null;
+  });
+
+  gridE.addEventListener('mouseleave', () => {
+    isDragging = false;
+    lastErasedCell = null;
+  });
+
+  gridE.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    isDragging = true;
+    lastErasedCell = null;
+    const touch = e.touches[0];
+    const cell = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cell');
+    if (cell){
+      const x = parseInt(cell.dataset.x);
+      const y = parseInt(cell.dataset.y);
+      onEditorCellClick(x, y);
+      lastErasedCell = `${x},${y}`;
+    }
+  }, { passive: false });
+
+  gridE.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const cell = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cell');
+    if (cell){
+      const x = parseInt(cell.dataset.x);
+      const y = parseInt(cell.dataset.y);
+      const cellKey = `${x},${y}`;
+      if (lastErasedCell !== cellKey){
+        onEditorCellClick(x, y);
+        lastErasedCell = cellKey;
+      }
+    }
+  }, { passive: false });
+
+  gridE.addEventListener('touchend', () => {
+    isDragging = false;
+    lastErasedCell = null;
+  });
+}
 
 $('#sizeUp').addEventListener('click', () => setDraftSize(draft.size + 1));
 $('#sizeDown').addEventListener('click', () => setDraftSize(draft.size - 1));
@@ -254,11 +334,15 @@ function renderEditor(){
     for (let xx=0; xx<size; xx++){
       const cell = document.createElement('div');
       cell.className = 'cell';
+      cell.dataset.x = xx;
+      cell.dataset.y = yy;
       buildCellVisual(cell, xx, yy);
       cell.addEventListener('click', () => onEditorCellClick(xx,yy));
       gridE.appendChild(cell);
     }
   }
+
+  setupDragPlacement();
 
   const nS = draft.sources.length, nG = draft.goals.length;
   if (nS===0 && nG===0) editorMsg.textContent = '光源とゴールを配置しよう';
