@@ -16,6 +16,7 @@ const stageList = $('#stageList');
 let currentLevel = null;
 let currentMeta = { name:'', savedId:null, isTest:false };
 let mirrorStates = {};
+let converterStates = {};
 let cellPxP = 56;
 let cellMapP = {};
 
@@ -93,8 +94,10 @@ function loadLevel(level, name, savedId, isTest){
   currentLevel = levelCopy;
   currentMeta = { name, savedId, isTest };
   mirrorStates = {};
+  converterStates = {};
   levelCopy.elements.forEach(e => {
     if (e.kind==='mirror' && e.rotatable) mirrorStates[e.id] = e.orient;
+    if (e.kind==='converter') converterStates[e.id] = (e.enabled !== false);
   });
   playTitle.textContent = (isTest ? '🧪 テスト：' : '') + name;
   buildPlayBoard(levelCopy);
@@ -138,10 +141,14 @@ function buildPlayBoard(level){
   level.elements.forEach(e => {
     const cell = cellMapP[e.x+','+e.y];
     const orient = e.kind==='mirror' && e.rotatable ? mirrorStates[e.id] : e.orient;
-    const opts = Object.assign({}, e, orient!==undefined?{orient}:{});
-    const line = renderElementVisual(cell, e.kind, opts);
-    if (line && e.kind==='mirror' && e.rotatable){
-      cell.addEventListener('click', () => rotateMirror(e.id, line));
+    const enabled = e.kind==='converter' ? converterStates[e.id] : e.enabled;
+    const opts = Object.assign({}, e, orient!==undefined?{orient}:{}, enabled!==undefined?{enabled}:{});
+    const visual = renderElementVisual(cell, e.kind, opts);
+    if (visual && e.kind==='mirror' && e.rotatable){
+      cell.addEventListener('click', () => rotateMirror(e.id, visual));
+    }
+    if (visual && e.kind==='converter' && e.interactive){
+      cell.addEventListener('click', () => toggleConverter(e.id, cell, visual));
     }
   });
 
@@ -158,11 +165,22 @@ function rotateMirror(id, lineEl){
   recompute();
 }
 
+function toggleConverter(id, cellEl, panelEl){
+  converterStates[id] = !converterStates[id];
+  const enabled = converterStates[id];
+  panelEl.classList.toggle('disabled', !enabled);
+  const badge = cellEl.querySelector('.converter-badge');
+  if (badge) {
+    badge.textContent = enabled ? 'ON' : 'OFF';
+  }
+  recompute();
+}
+
 function cellCenter(x,y){ return [ x*cellPxP + cellPxP/2, y*cellPxP + cellPxP/2 ]; }
 
 function recompute(){
   const level = currentLevel;
-  const { segments, allGoalsMet, goalStates } = traceAll(level, mirrorStates);
+  const { segments, allGoalsMet, goalStates } = traceAll(level, mirrorStates, converterStates);
 
   let svgParts = '';
   segments.forEach(seg => {

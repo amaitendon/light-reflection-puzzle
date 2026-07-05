@@ -92,6 +92,37 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
   position:absolute; inset:16%; border-radius:5px; display:flex; align-items:center; justify-content:center;
   font-size:11px; font-weight:800; color:rgba(10,14,22,0.75); border:1px solid rgba(255,255,255,0.3);
 }
+.cell.converter-cell.interactive { cursor: pointer; }
+.cell.converter-cell.interactive:hover .converter-panel { filter: brightness(1.2); }
+.converter-panel.disabled {
+  background: linear-gradient(135deg, #242833 30%, #3e4452) !important;
+  color: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  opacity: 0.5;
+}
+.converter-ring {
+  position: absolute;
+  inset: 8%;
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  pointer-events: none;
+}
+.converter-badge {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: #2a2d36;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
 
 .cell.source{ background:radial-gradient(circle at 50% 50%, rgba(255,255,255,0.10), transparent 70%); }
 .emitter{ position:absolute; inset:22%; border-radius:4px; animation:pulse-emitter 1.6s ease-in-out infinite; }

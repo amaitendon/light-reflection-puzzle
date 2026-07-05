@@ -6,7 +6,7 @@ function reflect(dx, dy, orient){ return orient==='/' ? [-dy,-dx] : [dy,dx]; }
 function rotateCCW(dx,dy){ return [dy,-dx]; }
 function rotateCW(dx,dy){ return [-dy,dx]; }
 
-function traceAll(level, mirrorStates){
+function traceAll(level, mirrorStates, converterStates){
   const goalHits = {};
   const visited = new Set();
   const segments = [];
@@ -54,7 +54,13 @@ function traceAll(level, mirrorStates){
           continue;
         }
       }
-      if (el.kind==='converter'){ color = el.color; continue; }
+      if (el.kind==='converter'){
+        const isEnabled = (converterStates && el.id in converterStates) ? converterStates[el.id] : (el.enabled !== false);
+        if (isEnabled) {
+          color = el.color;
+        }
+        continue;
+      }
     }
   }
 

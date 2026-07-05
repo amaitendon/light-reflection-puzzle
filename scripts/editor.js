@@ -29,6 +29,14 @@ const mirrorRotatableCheck = $('#mirrorRotatable');
 const mirrorFilterEnabledCheck = $('#mirrorFilterEnabled');
 const mirrorFilterColorPicker = $('#mirrorFilterColorPicker');
 
+let converterInteractive = true;
+const converterSettingsRow = $('#converterSettingsRow');
+const converterInteractiveCheck = $('#converterInteractive');
+
+converterInteractiveCheck.addEventListener('change', () => {
+  converterInteractive = converterInteractiveCheck.checked;
+});
+
 const NEEDS_COLOR = new Set(['source','goal','converter','mirror']);
 
 COLORS.forEach(c => {
@@ -66,6 +74,7 @@ document.querySelectorAll('.tool-btn').forEach(btn => {
     dirRow.style.display = currentTool==='source' ? 'flex' : 'none';
     colorRow.style.display = NEEDS_COLOR.has(currentTool) && currentTool!=='mirror' ? 'flex' : 'none';
     mirrorSettingsRow.style.display = currentTool==='mirror' ? 'flex' : 'none';
+    converterSettingsRow.style.display = currentTool==='converter' ? 'flex' : 'none';
   });
 });
 document.querySelectorAll('.dir-picker button').forEach(btn => {
@@ -215,9 +224,17 @@ function onEditorCellClick(x,y){
   if (currentTool==='converter'){
     if (elHere && elHere.kind==='converter'){
       elHere.color = currentColor;
+      elHere.interactive = converterInteractive;
     } else {
       clearCellInDraft(x,y);
-      draft.elements.push({id:nextId(), kind:'converter', x, y, color:currentColor});
+      draft.elements.push({
+        id:nextId(),
+        kind:'converter',
+        x, y,
+        color:currentColor,
+        interactive: converterInteractive,
+        enabled: true
+      });
     }
     renderEditor(); return;
   }
@@ -265,12 +282,27 @@ function renderElementVisual(cell, kind, opts){
     return line;
   }
   if (kind==='converter'){
+    cell.classList.add('converter-cell');
+    if (opts.interactive) {
+      cell.classList.add('interactive');
+    }
     const hex = COLOR_HEX[opts.color];
     const panel = el('converter-panel');
     panel.style.background = `linear-gradient(135deg, #3a4152 30%, ${hex})`;
     panel.textContent = '⇄';
+    if (opts.enabled === false) {
+      panel.classList.add('disabled');
+    }
     cell.appendChild(panel);
-    return null;
+
+    if (opts.interactive) {
+      const ring = el('converter-ring');
+      cell.appendChild(ring);
+      const badge = el('converter-badge');
+      badge.textContent = opts.enabled === false ? 'OFF' : 'ON';
+      cell.appendChild(badge);
+    }
+    return panel;
   }
 }
 
