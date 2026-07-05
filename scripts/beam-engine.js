@@ -6,7 +6,7 @@ function reflect(dx, dy, orient){ return orient==='/' ? [-dy,-dx] : [dy,dx]; }
 function rotateCCW(dx,dy){ return [dy,-dx]; }
 function rotateCW(dx,dy){ return [-dy,dx]; }
 
-function traceAll(level, mirrorStates, converterStates){
+function traceAll(level, mirrorStates, converterStates, sourceStates){
   const goalHits = {};
   const visited = new Set();
   const segments = [];
@@ -64,7 +64,10 @@ function traceAll(level, mirrorStates, converterStates){
     }
   }
 
-  level.sources.forEach(s => walk(s.x, s.y, DIRS[s.dir][0], DIRS[s.dir][1], s.color));
+  level.sources.forEach(s => {
+    const dir = (s.rotatable && sourceStates && sourceStates[s.id]) ? sourceStates[s.id] : s.dir;
+    walk(s.x, s.y, DIRS[dir][0], DIRS[dir][1], s.color);
+  });
   const goalStates = level.goals.map(g => ({ g, got: goalHits[g.x+','+g.y]||0, ok: (goalHits[g.x+','+g.y]||0)===g.color }));
   const allGoalsMet = goalStates.length>0 && goalStates.every(s=>s.ok);
   return { goalHits, segments, allGoalsMet, goalStates };

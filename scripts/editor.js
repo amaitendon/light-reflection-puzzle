@@ -11,6 +11,7 @@ let currentColor = 7;
 let mirrorRotatable = true;
 let mirrorFilterEnabled = false;
 let mirrorFilterColor = 7;
+let sourceRotatable = true;
 
 let isDragging = false;
 let lastErasedCell = null;
@@ -35,6 +36,13 @@ const converterInteractiveCheck = $('#converterInteractive');
 
 converterInteractiveCheck.addEventListener('change', () => {
   converterInteractive = converterInteractiveCheck.checked;
+});
+
+const sourceSettingsRow = $('#sourceSettingsRow');
+const sourceRotatableCheck = $('#sourceRotatable');
+
+sourceRotatableCheck.addEventListener('change', () => {
+  sourceRotatable = sourceRotatableCheck.checked;
 });
 
 const NEEDS_COLOR = new Set(['source','goal','converter','mirror']);
@@ -73,6 +81,7 @@ document.querySelectorAll('.tool-btn').forEach(btn => {
     document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b===btn));
     dirRow.style.display = currentTool==='source' ? 'flex' : 'none';
     colorRow.style.display = NEEDS_COLOR.has(currentTool) && currentTool!=='mirror' ? 'flex' : 'none';
+    sourceSettingsRow.style.display = currentTool==='source' ? 'flex' : 'none';
     mirrorSettingsRow.style.display = currentTool==='mirror' ? 'flex' : 'none';
     converterSettingsRow.style.display = currentTool==='converter' ? 'flex' : 'none';
   });
@@ -241,8 +250,25 @@ function onEditorCellClick(x,y){
 
 
   if (currentTool==='source'){
-    clearCellInDraft(x,y);
-    draft.sources.push({id:nextId(), x, y, dir:currentDir, color:currentColor});
+    const srcHere = draft.sources.find(s=>s.x===x&&s.y===y);
+    if (srcHere){
+      srcHere.color = currentColor;
+      srcHere.rotatable = sourceRotatable;
+      if (sourceRotatable){
+        const nextDir = { right:'down', down:'left', left:'up', up:'right' };
+        srcHere.dir = nextDir[srcHere.dir] || 'right';
+      }
+    } else {
+      clearCellInDraft(x,y);
+      draft.sources.push({
+        id:nextId(),
+        x,
+        y,
+        dir:currentDir,
+        color:currentColor,
+        rotatable: sourceRotatable
+      });
+    }
     renderEditor(); return;
   }
 
@@ -307,7 +333,7 @@ function renderElementVisual(cell, kind, opts){
 }
 
 function renderSourceVisual(cell, s){
-  cell.classList.add('source');
+  cell.classList.add('source', s.rotatable ? 'movable' : 'fixed');
   const hex = COLOR_HEX[s.color];
   const emitter = el('emitter');
   emitter.style.background = `radial-gradient(circle, #fff, ${hex})`;
@@ -320,7 +346,16 @@ function renderSourceVisual(cell, s){
   arrow.style.left='50%'; arrow.style.top='50%';
   arrow.style.transform = `translate(-30%,-50%) rotate(${angle}deg)`;
   arrow.style.transformOrigin = '20% 50%';
+  arrow.dataset.deg = angle;
   cell.appendChild(arrow);
+
+  if (s.rotatable) {
+    cell.appendChild(el('source-ring'));
+  } else {
+    const badge = el('lock-badge'); badge.textContent='🔒'; cell.appendChild(badge);
+    cell.appendChild(el('rivet tl')); cell.appendChild(el('rivet br'));
+  }
+  return arrow;
 }
 
 function renderGoalVisual(cell, g, satisfied){
@@ -467,6 +502,14 @@ function migrateLegacyData(level){
     }
     return e;
   });
+  if (level.sources) {
+    level.sources = level.sources.map(s => {
+      if (s.rotatable === undefined) {
+        return { ...s, rotatable: false };
+      }
+      return s;
+    });
+  }
 }
 
 $('#importBtn').addEventListener('click', () => {

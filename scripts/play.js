@@ -17,6 +17,7 @@ let currentLevel = null;
 let currentMeta = { name:'', savedId:null, isTest:false };
 let mirrorStates = {};
 let converterStates = {};
+let sourceStates = {};
 let cellPxP = 56;
 let cellMapP = {};
 
@@ -86,6 +87,14 @@ function migrateLegacyData(level){
     }
     return e;
   });
+  if (level.sources) {
+    level.sources = level.sources.map(s => {
+      if (s.rotatable === undefined) {
+        return { ...s, rotatable: false };
+      }
+      return s;
+    });
+  }
 }
 
 function loadLevel(level, name, savedId, isTest){
@@ -95,9 +104,13 @@ function loadLevel(level, name, savedId, isTest){
   currentMeta = { name, savedId, isTest };
   mirrorStates = {};
   converterStates = {};
+  sourceStates = {};
   levelCopy.elements.forEach(e => {
     if (e.kind==='mirror' && e.rotatable) mirrorStates[e.id] = e.orient;
     if (e.kind==='converter') converterStates[e.id] = (e.enabled !== false);
+  });
+  levelCopy.sources.forEach(s => {
+    if (s.rotatable) sourceStates[s.id] = s.dir;
   });
   playTitle.textContent = (isTest ? '🧪 テスト：' : '') + name;
   buildPlayBoard(levelCopy);
@@ -152,7 +165,15 @@ function buildPlayBoard(level){
     }
   });
 
-  level.sources.forEach(s => renderSourceVisual(cellMapP[s.x+','+s.y], s));
+  level.sources.forEach(s => {
+    const dir = (s.rotatable && sourceStates[s.id]) ? sourceStates[s.id] : s.dir;
+    const opts = Object.assign({}, s, {dir});
+    const cell = cellMapP[s.x+','+s.y];
+    const visual = renderSourceVisual(cell, opts);
+    if (visual && s.rotatable){
+      cell.addEventListener('click', () => rotateSource(s.id, visual));
+    }
+  });
   level.goals.forEach(g => renderGoalVisual(cellMapP[g.x+','+g.y], g, false));
 }
 
@@ -162,6 +183,19 @@ function rotateMirror(id, lineEl){
   lineEl.style.transform = `rotate(${next}deg)`;
   lineEl.dataset.deg = next;
   mirrorStates[id] = (mirrorStates[id]==='/') ? '\\' : '/';
+  recompute();
+}
+
+function rotateSource(id, arrowEl){
+  const cur = parseFloat(arrowEl.dataset.deg) || 0;
+  const next = cur + 90;
+  arrowEl.style.transform = `translate(-30%,-50%) rotate(${next}deg)`;
+  arrowEl.dataset.deg = next;
+  const dirOrder = ['right', 'down', 'left', 'up'];
+  const curDir = sourceStates[id];
+  const curIdx = dirOrder.indexOf(curDir);
+  const nextDir = dirOrder[(curIdx + 1) % 4];
+  sourceStates[id] = nextDir;
   recompute();
 }
 
@@ -180,7 +214,7 @@ function cellCenter(x,y){ return [ x*cellPxP + cellPxP/2, y*cellPxP + cellPxP/2 
 
 function recompute(){
   const level = currentLevel;
-  const { segments, allGoalsMet, goalStates } = traceAll(level, mirrorStates, converterStates);
+  const { segments, allGoalsMet, goalStates } = traceAll(level, mirrorStates, converterStates, sourceStates);
 
   let svgParts = '';
   segments.forEach(seg => {
