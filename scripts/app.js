@@ -24,9 +24,7 @@ window.addEventListener('resize', () => {
 
 /* ================= init ================= */
 (async function init(){
-  await loadCustomLevels();
   renderEditor();
-  renderStageList();
 
   const stageId = getStageIdFromUrl();
   const mode = getModeFromUrl();

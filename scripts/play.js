@@ -25,16 +25,18 @@ function showPlayList(){ playListView.style.display=''; playBoardView.style.disp
 function showPlayBoard(){ playListView.style.display='none'; playBoardView.style.display=''; }
 $('#backToListBtn').addEventListener('click', showPlayList);
 
-function renderStageList(){
+async function renderStageList(){
+  stageList.innerHTML = '<div class="empty-state">読み込み中...</div>';
+  const stages = await loadOfficialStages();
   stageList.innerHTML = '';
-  if (customLevels.length===0){
+  if (stages.length===0){
     const empty = document.createElement('div');
     empty.className = 'empty-state';
-    empty.innerHTML = 'まだステージがありません。<br>「つくる」タブでステージを作って保存しよう。';
+    empty.innerHTML = '公式ステージがありません。<br>「つくる」タブでステージを作成できます。';
     stageList.appendChild(empty);
     return;
   }
-  customLevels.forEach(entry => {
+  stages.forEach(entry => {
     const item = document.createElement('div');
     item.className = 'stage-item';
     item.innerHTML = `
@@ -42,32 +44,12 @@ function renderStageList(){
       <div class="meta"><div class="name"></div><div class="sub"></div></div>
       <div class="actions">
         <button class="btn btn-primary" data-act="play">遊ぶ</button>
-        <button class="btn" data-act="edit">編集</button>
-        <button class="btn btn-danger" data-act="del">削除</button>
       </div>`;
-    item.querySelector('.name').textContent = entry.name;
+    const name = entry.name || entry.title || entry.id;
+    item.querySelector('.name').textContent = name;
     item.querySelector('.sub').textContent = `${entry.level.size}×${entry.level.size} ・ 光源${entry.level.sources.length} ・ ゴール${entry.level.goals.length}`;
-    item.querySelector('[data-act="play"]').addEventListener('click', () => loadLevel(entry.level, entry.name, entry.id, false));
-    item.querySelector('[data-act="edit"]').addEventListener('click', () => {
-      const level = JSON.parse(JSON.stringify(entry.level));
-      migrateLegacyData(level);
-      draft = {
-        size: level.size,
-        walls: level.walls.map(w=>w.slice()),
-        elements: level.elements.map(e=>Object.assign({}, e)),
-        sources: level.sources.map(s=>Object.assign({}, s)),
-        goals: level.goals.map(g=>Object.assign({}, g)),
-      };
-      $('#nameInput').value = entry.name;
-      sizeVal.textContent = draft.size + ' × ' + draft.size;
-      renderEditor();
-      showTab('editor');
-    });
-    item.querySelector('[data-act="del"]').addEventListener('click', async () => {
-      customLevels = customLevels.filter(e => e.id !== entry.id);
-      await persistCustomLevels();
-      renderStageList();
-      toast('削除しました');
+    item.querySelector('[data-act="play"]').addEventListener('click', () => {
+      loadLevel(entry.level, name, entry.id, false);
     });
     stageList.appendChild(item);
   });

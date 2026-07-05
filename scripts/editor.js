@@ -481,17 +481,6 @@ $('#testPlayBtn').addEventListener('click', () => {
   loadLevel(level, nameField || 'テストプレイ', null, true);
 });
 
-$('#saveBtn').addEventListener('click', async () => {
-  if (!validateDraft()) return;
-  const name = $('#nameInput').value.trim() || ('ステージ ' + (customLevels.length+1));
-  const level = draftToLevel();
-  const entry = { id:'u'+Date.now(), name, level };
-  customLevels.push(entry);
-  await persistCustomLevels();
-  toast('「' + name + '」を保存しました');
-  renderStageList();
-});
-
 $('#exportOfficialBtn').addEventListener('click', async () => {
   if (!validateDraft()) return;
   const name = $('#nameInput').value.trim() || '無題のステージ';
@@ -508,28 +497,41 @@ $('#exportOfficialBtn').addEventListener('click', async () => {
   }
 });
 
-$('#exportBtn').addEventListener('click', () => {
-  if (!validateDraft()) return;
-  const level = draftToLevel();
-  const name = $('#nameInput').value.trim() || '無題のステージ';
-  let code = '';
-  try{ code = btoa(unescape(encodeURIComponent(JSON.stringify({name, level})))); }
-  catch(e){ toast('書き出しに失敗しました'); return; }
-  const box = $('#exportBox');
-  box.style.display = 'block';
-  box.value = code;
-  box.focus(); box.select();
-  try{ document.execCommand('copy'); toast('コードをコピーしました'); }
-  catch(e){ toast('コードを選択してコピーしてね'); }
-});
-
-function decodeCode(code){
-  const json = decodeURIComponent(escape(atob(code.trim())));
-  const payload = JSON.parse(json);
+function applyStagePayload(payload){
   if (!payload || !payload.level || !payload.level.sources || !payload.level.goals) throw new Error('invalid');
   migrateLegacyData(payload.level);
-  return payload;
+  draft = {
+    size: payload.level.size,
+    walls: payload.level.walls.map(w=>w.slice()),
+    elements: payload.level.elements.map(e=>Object.assign({}, e)),
+    sources: payload.level.sources.map(s=>Object.assign({}, s)),
+    goals: payload.level.goals.map(g=>Object.assign({}, g)),
+  };
+  const name = payload.name || payload.title || '';
+  $('#nameInput').value = name;
+  if (payload.description !== undefined) $('#officialDesc').value = payload.description || '';
+  if (payload.difficulty !== undefined) $('#officialDifficulty').value = String(payload.difficulty || 1);
+  if (payload.tags !== undefined) {
+    const tags = Array.isArray(payload.tags) ? payload.tags : parseTagsInput(payload.tags);
+    $('#officialTags').value = tags.join(', ');
+  }
+  sizeVal.textContent = draft.size + ' × ' + draft.size;
+  renderEditor();
+  toast('「' + (name || 'ステージ') + '」を読み込みました');
 }
+
+$('#importFileBtn').addEventListener('click', () => $('#importFileInput').click());
+$('#importFileInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    applyStagePayload(JSON.parse(text));
+  } catch (err) {
+    toast('JSONを読み込めませんでした');
+  }
+  e.target.value = '';
+});
 
 function migrateLegacyData(level){
   level.elements = level.elements.map(e => {
@@ -562,23 +564,3 @@ function migrateLegacyData(level){
   }
 }
 
-$('#importBtn').addEventListener('click', () => {
-  const code = $('#importInput').value;
-  if (!code.trim()){ toast('コードを貼り付けてね'); return; }
-  try{
-    const payload = decodeCode(code);
-    draft = {
-      size: payload.level.size,
-      walls: payload.level.walls.map(w=>w.slice()),
-      elements: payload.level.elements.map(e=>Object.assign({}, e)),
-      sources: payload.level.sources.map(s=>Object.assign({}, s)),
-      goals: payload.level.goals.map(g=>Object.assign({}, g)),
-    };
-    $('#nameInput').value = payload.name || '';
-    sizeVal.textContent = draft.size + ' × ' + draft.size;
-    renderEditor();
-    toast('「' + (payload.name||'ステージ') + '」を読み込みました');
-  }catch(e){
-    toast('コードを読み込めませんでした');
-  }
-});

@@ -122,8 +122,6 @@
     <div class="toolbar-row">
       <input id="nameInput" class="name-input" type="text" placeholder="ステージ名（例：はじめの一歩）" maxlength="24">
       <button id="testPlayBtn" class="btn btn-primary">▶ テストプレイ</button>
-      <button id="saveBtn" class="btn">保存してマイステージへ</button>
-      <button id="exportBtn" class="btn">コードを書き出す</button>
     </div>
 
     <div class="toolbar-row official-meta-row">
@@ -148,15 +146,13 @@
       </label>
     </div>
     <div class="toolbar-row">
-      <button id="exportOfficialBtn" class="btn btn-primary">📦 公式ステージとして書き出す</button>
+      <button id="exportOfficialBtn" class="btn btn-primary">📦 ファイルへ書き出す</button>
       <span class="hint-inline">書き出した JSON をサイト管理者がサーバーに追加すると、トップページの公式ステージ一覧に載ります</span>
     </div>
-    <textarea id="exportBox" class="code-box" style="display:none;" readonly></textarea>
-
     <div class="toolbar-row">
       <span class="toolbar-label">読み込む</span>
-      <input id="importInput" class="name-input" type="text" placeholder="共有コードを貼り付け">
-      <button id="importBtn" class="btn">コードから読み込む</button>
+      <input id="importFileInput" type="file" accept=".json,application/json" style="display:none;">
+      <button id="importFileBtn" class="btn">JSONファイルから読み込む</button>
     </div>
   </div>
 
@@ -164,7 +160,7 @@
   <div class="panel" id="panelPlay">
 
     <div id="playListView">
-      <div class="hud"><div class="hud-title">マイステージ</div></div>
+      <div class="hud"><div class="hud-title">公式ステージ</div></div>
       <div class="stage-list" id="stageList"></div>
     </div>
 
@@ -185,7 +181,7 @@
         </div>
       </div>
       <div class="toolbar-row">
-        <button id="backToListBtn" class="btn">← マイステージへ戻る</button>
+        <button id="backToListBtn" class="btn">← 一覧へ戻る</button>
       </div>
     </div>
   </div>
@@ -207,7 +203,6 @@
 <script src="scripts/color-system.js"></script>
 <script src="scripts/beam-engine.js"></script>
 <script src="scripts/ui-utils.js"></script>
-<script src="scripts/storage.js"></script>
 <script src="scripts/official-stage.js"></script>
 <script src="scripts/stages-loader.js"></script>
 <script src="scripts/editor.js"></script>
