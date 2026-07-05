@@ -87,7 +87,7 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
   margin-left:-4.5px;
   margin-top:-4.5px;
   border-radius:50%;
-  transform:rotate(var(--marker-angle, 0deg)) translateY(-16px);
+  transform:rotate(var(--marker-angle, 0deg)) translateX(16px);
   transform-origin:center center;
   border:1px solid rgba(255,255,255,0.35);
   box-shadow:0 0 6px rgba(0,0,0,0.35);
