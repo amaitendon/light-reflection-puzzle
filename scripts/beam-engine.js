@@ -61,16 +61,6 @@ function traceAll(level, mirrorStates){
         if (transmitColor){ walk(cx,cy,dx,dy,transmitColor); }
         return;
       }
-      if (el.kind==='prism'){
-        segments.push({pts,color,terminal:'SPLIT'});
-        const blue = color & 4, red = color & 1, green = color & 2;
-        if (blue) walk(cx,cy,dx,dy,blue);
-        const [lx,ly] = rotateCCW(dx,dy);
-        if (red) walk(cx,cy,lx,ly,red);
-        const [rx,ry] = rotateCW(dx,dy);
-        if (green) walk(cx,cy,rx,ry,green);
-        return;
-      }
     }
   }
 

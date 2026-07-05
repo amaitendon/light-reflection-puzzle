@@ -192,13 +192,6 @@ function onEditorCellClick(x,y){
     renderEditor(); return;
   }
 
-  if (currentTool==='prism'){
-    if (!(elHere && elHere.kind==='prism')){
-      clearCellInDraft(x,y);
-      draft.elements.push({id:nextId(), kind:'prism', x, y});
-    }
-    renderEditor(); return;
-  }
 
   if (currentTool==='source'){
     clearCellInDraft(x,y);
@@ -261,10 +254,6 @@ function renderElementVisual(cell, kind, opts){
     panel.style.background = `linear-gradient(135deg, #3a4152 30%, ${hex})`;
     panel.textContent = '⇄';
     cell.appendChild(panel);
-    return null;
-  }
-  if (kind==='prism'){
-    cell.appendChild(el('prism-shape'));
     return null;
   }
 }

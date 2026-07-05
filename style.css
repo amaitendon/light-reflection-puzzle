@@ -92,12 +92,6 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
   position:absolute; inset:16%; border-radius:5px; display:flex; align-items:center; justify-content:center;
   font-size:11px; font-weight:800; color:rgba(10,14,22,0.75); border:1px solid rgba(255,255,255,0.3);
 }
-.prism-shape{
-  position:absolute; inset:16%;
-  clip-path:polygon(50% 6%, 94% 94%, 6% 94%);
-  background:linear-gradient(120deg, #ff5a5a, #ffe75a, #5affa0, #5aa8ff, #ff5ae0);
-  box-shadow:0 0 10px rgba(255,255,255,0.3);
-}
 
 .cell.source{ background:radial-gradient(circle at 50% 50%, rgba(255,255,255,0.10), transparent 70%); }
 .emitter{ position:absolute; inset:22%; border-radius:4px; animation:pulse-emitter 1.6s ease-in-out infinite; }
@@ -135,7 +129,6 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
 .tool-swatch.halfmirror::after{ content:""; position:absolute; top:50%; left:5%; width:90%; height:2px; background:#fff; transform:translateY(-50%) rotate(-45deg); }
 .tool-swatch.filter{ background:linear-gradient(135deg, rgba(90,255,160,0.6), rgba(90,255,160,0.15)); }
 .tool-swatch.converter{ background:linear-gradient(135deg, #666, #ff5ae0); }
-.tool-swatch.prism{ clip-path:polygon(50% 6%, 94% 94%, 6% 94%); background:linear-gradient(120deg, #ff5a5a, #ffe75a, #5affa0, #5aa8ff); }
 .tool-swatch.source{ background:radial-gradient(circle,#fff,#ff5a5a); }
 .tool-swatch.goal{ background:transparent; border:2px solid var(--amber); }
 .tool-swatch.erase{ background:var(--panel-3); }
