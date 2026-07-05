@@ -373,6 +373,7 @@ function renderElementVisual(cell, kind, opts){
 function renderSourceVisual(cell, s){
   cell.classList.add('source', s.rotatable ? 'movable' : 'fixed');
   const hex = COLOR_HEX[s.color];
+  const contrastHex = hex === '#ffffff' ? '#111827' : hex;
   const emitter = el('emitter');
   emitter.style.background = `radial-gradient(circle, #fff, ${hex})`;
   emitter.style.boxShadow = `0 0 12px ${hex}`;
@@ -380,10 +381,13 @@ function renderSourceVisual(cell, s){
   const arrow = el('emitter-arrow');
   const angle = DIR_ANGLE[s.dir];
   arrow.style.borderWidth = `8px 0 8px 11px`;
-  arrow.style.borderColor = `transparent transparent transparent ${hex}`;
+  arrow.style.borderColor = `transparent transparent transparent ${contrastHex}`;
   arrow.style.left='50%'; arrow.style.top='50%';
   arrow.style.transform = `translate(-30%,-50%) rotate(${angle}deg)`;
   arrow.style.transformOrigin = '20% 50%';
+  arrow.style.filter = hex === '#ffffff'
+    ? 'drop-shadow(0 0 2px rgba(255,255,255,0.95)) drop-shadow(0 0 4px rgba(0,0,0,0.85))'
+    : 'drop-shadow(0 0 2px rgba(0,0,0,0.45))';
   arrow.dataset.deg = angle;
   cell.appendChild(arrow);
 
