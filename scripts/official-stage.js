@@ -56,9 +56,18 @@ function downloadJSON(obj, filename) {
   URL.revokeObjectURL(a.href);
 }
 
+function sanitizeFilename(name) {
+  const base = String(name || '')
+    .replace(/[<>:"/\\|?*\x00-\x1F]/g, '_')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/[. ]+$/g, '');
+  return base || 'stage';
+}
+
 async function exportOfficialStageFile({ title, description, difficulty, tags, name, level }) {
   const id = await getNextStageId();
   const pkg = buildOfficialPackage({ id, title, description, difficulty, tags, name, level });
-  downloadJSON(pkg, `${id}-official.json`);
+  downloadJSON(pkg, `${sanitizeFilename(pkg.title)}.json`);
   return pkg;
 }
