@@ -39,15 +39,6 @@ function isFrontSide(dx, dy, lineAngle) {
   return dx * nx + dy * ny >= -1e-9;
 }
 
-// orient: 0=透過, 45=\相当(90度曲げ), 90=Uターン, 135=/相当(90度曲げ)
-function reflect(dx, dy, orient){
-  const a = (orient === undefined || orient === null) ? 45 : orient;
-  if (a === 0)   return [dx, dy];       // 0度: 素通り
-  if (a === 90)  return [-dx, -dy];     // 90度: Uターン反射
-  if (a === 45)  return [dy, dx];       // 45度: \型 90度曲げ
-  if (a === 135) return [-dy, -dx];     // 135度: /型 90度曲げ
-  return [dx, dy]; // fallback
-}
 function traceAll(level, mirrorStates, converterStates, sourceStates){
   const goalHits = {};
   const visited = new Set();
@@ -130,7 +121,7 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
     const dir = (s.rotatable && sourceStates && sourceStates[s.id]) ? sourceStates[s.id] : s.dir;
     walk(s.x, s.y, DIRS[dir][0], DIRS[dir][1], s.color);
   });
-  const goalStates = level.goals.map(g => ({ g, got: goalHits[g.x+','+g.y]||0, ok: (goalHits[g.x+','+g.y]||0)===g.color }));
+  const goalStates = level.goals.map(g => ({ g, ok: (goalHits[g.x+','+g.y]||0)===g.color }));
   const allGoalsMet = goalStates.length>0 && goalStates.every(s=>s.ok);
-  return { goalHits, segments, allGoalsMet, goalStates };
+  return { segments, allGoalsMet, goalStates };
 }

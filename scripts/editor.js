@@ -107,7 +107,7 @@ buildColorSwatchPicker(colorPicker, '.color-swatch-btn', bits => { currentColor 
 buildColorSwatchPicker(mirrorFilterColorPicker, '#mirrorFilterColorPicker .color-swatch-btn', bits => { mirrorFilterColor = bits; });
 
 function setMirrorOrientActive(angle){
-  document.querySelectorAll('#mirrorOrientPicker .dir-picker button').forEach(btn => {
+  document.querySelectorAll('#mirrorOrientPicker button').forEach(btn => {
     btn.classList.toggle('active', parseInt(btn.dataset.orient, 10) === angle);
   });
 }
@@ -120,7 +120,7 @@ MIRROR_ROTATION_STEPS.forEach(angle => {
   b.dataset.orient = String(angle);
   b.addEventListener('click', () => {
     mirrorOrient = angle;
-    document.querySelectorAll('#mirrorOrientPicker .dir-picker button').forEach(x=>x.classList.toggle('active', x===b));
+    document.querySelectorAll('#mirrorOrientPicker button').forEach(x=>x.classList.toggle('active', x===b));
   });
   mirrorOrientPicker.appendChild(b);
 });
@@ -143,14 +143,14 @@ document.querySelectorAll('.tool-btn').forEach(btn => {
     renderEditor();
   });
 });
-document.querySelectorAll('.dir-picker button').forEach(btn => {
+document.querySelectorAll('#dirRow .dir-picker button').forEach(btn => {
   btn.addEventListener('click', () => {
     currentDir = btn.dataset.dir;
-    document.querySelectorAll('.dir-picker button').forEach(b => b.classList.toggle('active', b===btn));
+    document.querySelectorAll('#dirRow .dir-picker button').forEach(b => b.classList.toggle('active', b===btn));
   });
 });
 document.querySelector('[data-tool="wall"]').classList.add('active');
-document.querySelector('[data-dir="right"]').classList.add('active');
+document.querySelector('#dirRow [data-dir="right"]').classList.add('active');
 
 mirrorRotatableCheck.addEventListener('change', () => {
   mirrorRotatable = mirrorRotatableCheck.checked;
