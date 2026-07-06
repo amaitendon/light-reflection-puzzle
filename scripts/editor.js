@@ -77,33 +77,25 @@ sourceRotatableCheck.addEventListener('change', () => {
 
 const NEEDS_COLOR = new Set(['source','goal','converter','mirror']);
 
-COLORS.forEach(c => {
-  const b = document.createElement('button');
-  b.className = 'color-swatch-btn';
-  b.style.background = c.hex;
-  b.title = c.name;
-  b.dataset.bits = c.bits;
-  b.addEventListener('click', () => {
-    currentColor = c.bits;
-    document.querySelectorAll('.color-swatch-btn').forEach(x=>x.classList.toggle('active', x===b));
+// 通常カラーピッカーとミラーフィルターカラーピッカーは、生成処理を共通化する。
+function buildColorSwatchPicker(container, activeSelector, onSelect){
+  COLORS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'color-swatch-btn';
+    b.style.background = c.hex;
+    b.title = c.name;
+    b.dataset.bits = c.bits;
+    b.addEventListener('click', () => {
+      onSelect(c.bits);
+      document.querySelectorAll(activeSelector).forEach(x=>x.classList.toggle('active', x===b));
+    });
+    container.appendChild(b);
   });
-  colorPicker.appendChild(b);
-});
-colorPicker.children[colorPicker.children.length-1].classList.add('active'); // default white
+  container.children[container.children.length-1].classList.add('active'); // default white
+}
 
-COLORS.forEach(c => {
-  const b = document.createElement('button');
-  b.className = 'color-swatch-btn';
-  b.style.background = c.hex;
-  b.title = c.name;
-  b.dataset.bits = c.bits;
-  b.addEventListener('click', () => {
-    mirrorFilterColor = c.bits;
-    document.querySelectorAll('#mirrorFilterColorPicker .color-swatch-btn').forEach(x=>x.classList.toggle('active', x===b));
-  });
-  mirrorFilterColorPicker.appendChild(b);
-});
-mirrorFilterColorPicker.children[mirrorFilterColorPicker.children.length-1].classList.add('active'); // default white
+buildColorSwatchPicker(colorPicker, '.color-swatch-btn', bits => { currentColor = bits; });
+buildColorSwatchPicker(mirrorFilterColorPicker, '#mirrorFilterColorPicker .color-swatch-btn', bits => { mirrorFilterColor = bits; });
 
 function setMirrorOrientActive(angle){
   document.querySelectorAll('#mirrorOrientPicker .dir-picker button').forEach(btn => {
@@ -166,123 +158,94 @@ mirrorFilterEnabledCheck.addEventListener('change', () => {
 
 let dragSetupDone = false;
 
+// マウス操作とタッチ操作は「座標(x,y)の取得方法」が違うだけで、
+// その後の処理内容は同じだったため、共通処理をここにまとめる。
+function handleGridPointerDown(x, y){
+  if (pasteMode){
+    pasteAt(x, y);
+    pasteMode = false;
+    updateSelectionUI();
+    return;
+  }
+  if (currentTool === 'select'){
+    isSelecting = true;
+    selectAnchor = {x,y};
+    selection = {x0:x,y0:y,x1:x,y1:y};
+    updateSelectionUI();
+    renderEditor();
+    return;
+  }
+
+  isDragging = true;
+  lastErasedCell = null;
+  onEditorCellClick(x, y);
+  lastErasedCell = `${x},${y}`;
+}
+
+function handleGridPointerMove(x, y){
+  if (isSelecting){
+    selection = {x0:selectAnchor.x, y0:selectAnchor.y, x1:x, y1:y};
+    updateSelectionUI();
+    renderEditor();
+    return;
+  }
+  if (!isDragging) return;
+  const cellKey = `${x},${y}`;
+  if (lastErasedCell !== cellKey){
+    onEditorCellClick(x, y);
+    lastErasedCell = cellKey;
+  }
+}
+
+function resetGridPointerState(){
+  isSelecting = false;
+  isDragging = false;
+  lastErasedCell = null;
+}
+
+function endGridDrag(){
+  isDragging = false;
+  lastErasedCell = null;
+}
+
+function cellFromTouch(touch){
+  return document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cell');
+}
+
 function setupDragPlacement(){
   if (dragSetupDone) return;
   dragSetupDone = true;
   gridE.addEventListener('mousedown', (e) => {
     const cell = e.target.closest('.cell');
     if (!cell) return;
-    const x = parseInt(cell.dataset.x);
-    const y = parseInt(cell.dataset.y);
-
-    if (pasteMode){
-      pasteAt(x, y);
-      pasteMode = false;
-      updateSelectionUI();
-      return;
-    }
-    if (currentTool === 'select'){
-      isSelecting = true;
-      selectAnchor = {x,y};
-      selection = {x0:x,y0:y,x1:x,y1:y};
-      updateSelectionUI();
-      renderEditor();
-      return;
-    }
-
-    isDragging = true;
-    lastErasedCell = null;
-    onEditorCellClick(x, y);
-    lastErasedCell = `${x},${y}`;
+    handleGridPointerDown(parseInt(cell.dataset.x), parseInt(cell.dataset.y));
   });
 
   gridE.addEventListener('mousemove', (e) => {
     const cell = e.target.closest('.cell');
     if (!cell) return;
-    const x = parseInt(cell.dataset.x);
-    const y = parseInt(cell.dataset.y);
-
-    if (isSelecting){
-      selection = {x0:selectAnchor.x, y0:selectAnchor.y, x1:x, y1:y};
-      updateSelectionUI();
-      renderEditor();
-      return;
-    }
-    if (!isDragging) return;
-    const cellKey = `${x},${y}`;
-    if (lastErasedCell !== cellKey){
-      onEditorCellClick(x, y);
-      lastErasedCell = cellKey;
-    }
+    handleGridPointerMove(parseInt(cell.dataset.x), parseInt(cell.dataset.y));
   });
 
-  document.addEventListener('mouseup', () => {
-    isSelecting = false;
-    isDragging = false;
-    lastErasedCell = null;
-  });
+  document.addEventListener('mouseup', resetGridPointerState);
 
-  gridE.addEventListener('mouseleave', () => {
-    isDragging = false;
-    lastErasedCell = null;
-  });
+  gridE.addEventListener('mouseleave', endGridDrag);
 
   gridE.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    const touch = e.touches[0];
-    const cell = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cell');
+    const cell = cellFromTouch(e.touches[0]);
     if (!cell) return;
-    const x = parseInt(cell.dataset.x);
-    const y = parseInt(cell.dataset.y);
-
-    if (pasteMode){
-      pasteAt(x, y);
-      pasteMode = false;
-      updateSelectionUI();
-      return;
-    }
-    if (currentTool === 'select'){
-      isSelecting = true;
-      selectAnchor = {x,y};
-      selection = {x0:x,y0:y,x1:x,y1:y};
-      updateSelectionUI();
-      renderEditor();
-      return;
-    }
-
-    isDragging = true;
-    lastErasedCell = null;
-    onEditorCellClick(x, y);
-    lastErasedCell = `${x},${y}`;
+    handleGridPointerDown(parseInt(cell.dataset.x), parseInt(cell.dataset.y));
   }, { passive: false });
 
   gridE.addEventListener('touchmove', (e) => {
     e.preventDefault();
-    const touch = e.touches[0];
-    const cell = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cell');
+    const cell = cellFromTouch(e.touches[0]);
     if (!cell) return;
-    const x = parseInt(cell.dataset.x);
-    const y = parseInt(cell.dataset.y);
-
-    if (isSelecting){
-      selection = {x0:selectAnchor.x, y0:selectAnchor.y, x1:x, y1:y};
-      updateSelectionUI();
-      renderEditor();
-      return;
-    }
-    if (!isDragging) return;
-    const cellKey = `${x},${y}`;
-    if (lastErasedCell !== cellKey){
-      onEditorCellClick(x, y);
-      lastErasedCell = cellKey;
-    }
+    handleGridPointerMove(parseInt(cell.dataset.x), parseInt(cell.dataset.y));
   }, { passive: false });
 
-  gridE.addEventListener('touchend', () => {
-    isSelecting = false;
-    isDragging = false;
-    lastErasedCell = null;
-  });
+  gridE.addEventListener('touchend', resetGridPointerState);
 }
 
 $('#sizeUp').addEventListener('click', () => setDraftSize(draft.size + 1));
@@ -373,6 +336,14 @@ function pasteAt(x0, y0){
   renderEditor();
 }
 
+function removeItemsInRect(x0, y0, x1, y1){
+  const inRect = (x,y) => x>=x0 && x<=x1 && y>=y0 && y<=y1;
+  draft.walls = draft.walls.filter(([x,y]) => !inRect(x,y));
+  draft.elements = draft.elements.filter(e => !inRect(e.x,e.y));
+  draft.sources = draft.sources.filter(s => !inRect(s.x,s.y));
+  draft.goals = draft.goals.filter(g => !inRect(g.x,g.y));
+}
+
 selCopyBtn.addEventListener('click', () => {
   if (copySelectionToClipboard()) toast('コピーしました');
 });
@@ -380,12 +351,7 @@ selCopyBtn.addEventListener('click', () => {
 selCutBtn.addEventListener('click', () => {
   const s = normalizedSelection();
   if (!copySelectionToClipboard()) return;
-  const { x0, y0, x1, y1 } = s;
-  const inRect = (x,y) => x>=x0 && x<=x1 && y>=y0 && y<=y1;
-  draft.walls = draft.walls.filter(([x,y]) => !inRect(x,y));
-  draft.elements = draft.elements.filter(e => !inRect(e.x,e.y));
-  draft.sources = draft.sources.filter(s2 => !inRect(s2.x,s2.y));
-  draft.goals = draft.goals.filter(g => !inRect(g.x,g.y));
+  removeItemsInRect(s.x0, s.y0, s.x1, s.y1);
   toast('切り取りました');
   renderEditor();
 });
@@ -613,7 +579,6 @@ function renderGoalVisual(cell, g, satisfied){
   target.style.borderColor = hex;
   target.style.boxShadow = `0 0 ${satisfied?18:10}px ${hex}`;
   cell.appendChild(target);
-  const dotWrap = document.createElement('style');
   target.style.setProperty('--dot', hex);
   const dot = document.createElement('div');
   dot.style.position='absolute'; dot.style.inset='28%'; dot.style.borderRadius='50%'; dot.style.background=hex;
@@ -748,34 +713,3 @@ $('#importFileInput').addEventListener('change', async (e) => {
   }
   e.target.value = '';
 });
-
-function migrateLegacyData(level){
-  level.elements = level.elements.map(e => {
-    if (e.kind==='mirror'){
-      if (e.type==='M'){
-        return { ...e, rotatable: true, doubleSided: true, filterColor: null };
-      } else if (e.type==='F'){
-        return { ...e, rotatable: false, doubleSided: true, filterColor: null };
-      }
-    }
-    if (e.kind==='halfmirror'){
-      return { ...e, kind: 'mirror', rotatable: true, doubleSided: true, filterColor: e.color };
-    }
-    if (e.kind==='converter'){
-      return {
-        type: 'replace',
-        interactive: true,
-        ...e
-      };
-    }
-    return e;
-  });
-  if (level.sources) {
-    level.sources = level.sources.map(s => {
-      if (s.rotatable === undefined) {
-        return { ...s, rotatable: false };
-      }
-      return s;
-    });
-  }
-}

@@ -48,9 +48,6 @@ function reflect(dx, dy, orient){
   if (a === 135) return [-dy, -dx];     // 135度: /型 90度曲げ
   return [dx, dy]; // fallback
 }
-function rotateCCW(dx,dy){ return [dy,-dx]; }
-function rotateCW(dx,dy){ return [-dy,dx]; }
-
 function traceAll(level, mirrorStates, converterStates, sourceStates){
   const goalHits = {};
   const visited = new Set();
