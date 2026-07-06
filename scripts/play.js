@@ -21,6 +21,32 @@ let sourceStates = {};
 let cellPxP = 56;
 let cellMapP = {};
 
+// ---- 経路確認モード（最後にクリックした光源の光線だけをアニメーション表示）----
+const traceModeBtn = $('#traceModeBtn');
+const traceHint = $('#traceHint');
+let traceMode = false;
+let tracedSourceId = null;
+const BEAM_STEP_MS = 130; // 1マス進むのにかかる時間
+
+function setTraceMode(on){
+  traceMode = on;
+  traceModeBtn.classList.toggle('active', traceMode);
+  if (!traceMode){ tracedSourceId = null; }
+  updateTraceHint();
+  if (currentLevel){ buildPlayBoard(currentLevel); recompute(); }
+}
+function updateTraceHint(){
+  traceHint.style.display = (traceMode && !tracedSourceId) ? '' : 'none';
+}
+traceModeBtn.addEventListener('click', () => setTraceMode(!traceMode));
+
+function selectTraceSource(id){
+  tracedSourceId = id;
+  updateTraceHint();
+  buildPlayBoard(currentLevel);
+  recompute();
+}
+
 // ---- 表示サイズ（セルのピクセルサイズの倍率）----
 // エディターと同様、盤面のマス数によらずプレイ時のセルサイズを調整できるようにする。
 const PLAY_ZOOM_MIN = 0.5;
@@ -107,6 +133,10 @@ function loadLevel(level, name, savedId, isTest){
   mirrorStates = {};
   converterStates = {};
   sourceStates = {};
+  traceMode = false;
+  tracedSourceId = null;
+  traceModeBtn.classList.remove('active');
+  updateTraceHint();
   levelCopy.elements.forEach(e => {
     if (e.kind==='mirror' && e.rotatable) {
       mirrorStates[e.id] = normalizeMirrorAngle(e.orient);
@@ -170,8 +200,13 @@ function buildPlayBoard(level){
     const opts = Object.assign({}, s, {dir});
     const cell = cellMapP[s.x+','+s.y];
     const visual = renderSourceVisual(cell, opts);
-    if (visual && s.rotatable){
-      cell.addEventListener('click', () => rotateSource(s.id, visual));
+    if (traceMode && tracedSourceId === s.id){ cell.classList.add('traced'); }
+    if (visual){
+      if (traceMode){ cell.classList.add('movable'); }
+      cell.addEventListener('click', () => {
+        if (traceMode){ selectTraceSource(s.id); }
+        else if (s.rotatable){ rotateSource(s.id, visual); }
+      });
     }
   });
   level.goals.forEach(g => renderGoalVisual(cellMapP[g.x+','+g.y], g, false));
@@ -219,10 +254,7 @@ function edgeKeyOf(a, b){
     : `${b[0]},${b[1]}|${a[0]},${a[1]}`;
 }
 
-function recompute(){
-  const level = currentLevel;
-  const { segments, allGoalsMet, goalStates } = traceAll(level, mirrorStates, converterStates, sourceStates);
-
+function renderBeamsNormal(segments){
   // 同じ経路（マス目間の同じ辺）を複数の光線が通る場合、色をビットOR合成して混色表示する
   const edgeColor = new Map();
   segments.forEach(seg => {
@@ -257,6 +289,85 @@ function recompute(){
     }
   });
   svgEl.innerHTML = svgParts;
+}
+
+// ---- 経路確認モード：選択した光源の光線だけを、光源から順番にアニメーションで描画する ----
+function renderBeamsTraced(allSegments){
+  svgEl.innerHTML = '';
+  if (!tracedSourceId) return;
+  const segs = allSegments.filter(seg => seg.sourceId === tracedSourceId);
+  if (segs.length === 0) return;
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const edges = [];
+  segs.forEach(seg => {
+    for (let i = 0; i < seg.pts.length - 1; i++){
+      edges.push({ a: seg.pts[i], b: seg.pts[i+1], color: seg.color, offset: (seg.startDist||0) + i });
+    }
+  });
+
+  const animatedPaths = [];
+  edges.forEach(edge => {
+    const hex = COLOR_HEX[edge.color] || '#ffffff';
+    const [ax, ay] = cellCenter(edge.a[0], edge.a[1]);
+    const [bx, by] = cellCenter(edge.b[0], edge.b[1]);
+    const d = `M ${ax} ${ay} L ${bx} ${by}`;
+
+    const glow = document.createElementNS(svgNS, 'path');
+    glow.setAttribute('class', 'beam-glow');
+    glow.setAttribute('d', d);
+    glow.style.stroke = hex;
+    const core = document.createElementNS(svgNS, 'path');
+    core.setAttribute('class', 'beam-core');
+    core.setAttribute('d', d);
+    core.style.stroke = hex;
+    core.style.filter = `drop-shadow(0 0 4px ${hex})`;
+
+    svgEl.appendChild(glow);
+    svgEl.appendChild(core);
+    animatedPaths.push({ glow, core, offset: edge.offset });
+  });
+
+  animatedPaths.forEach(({ glow, core, offset }) => {
+    [glow, core].forEach(p => {
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      p.animate(
+        [{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
+        { duration: BEAM_STEP_MS, delay: offset * BEAM_STEP_MS, fill: 'forwards', easing: 'linear' }
+      );
+    });
+  });
+
+  const maxOffset = edges.reduce((m, e) => Math.max(m, e.offset), 0) + 1;
+  setTimeout(() => {
+    segs.forEach(seg => {
+      if (['WALL','OUT','ABSORBED','LOOP'].includes(seg.terminal)){
+        const last = seg.pts[seg.pts.length-1];
+        const [ex,ey] = cellCenter(last[0], last[1]);
+        const circle = document.createElementNS(svgNS, 'circle');
+        circle.setAttribute('class', 'impact-mark');
+        circle.setAttribute('cx', ex);
+        circle.setAttribute('cy', ey);
+        circle.setAttribute('r', 5);
+        circle.style.opacity = '0';
+        svgEl.appendChild(circle);
+        circle.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, fill: 'forwards' });
+      }
+    });
+  }, maxOffset * BEAM_STEP_MS);
+}
+
+function recompute(){
+  const level = currentLevel;
+  const { segments, allGoalsMet, goalStates } = traceAll(level, mirrorStates, converterStates, sourceStates);
+
+  if (traceMode){
+    renderBeamsTraced(segments);
+  } else {
+    renderBeamsNormal(segments);
+  }
 
   goalStates.forEach(({g, ok}) => {
     const cell = cellMapP[g.x+','+g.y];

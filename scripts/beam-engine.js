@@ -50,24 +50,25 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
   const elementAt = (x,y) => level.elements.find(e=>e.x===x&&e.y===y);
   const goalAt = (x,y) => level.goals.find(g=>g.x===x&&g.y===y);
 
-  function walk(x0,y0,dx,dy,color){
+  function walk(x0,y0,dx,dy,color,sourceId,startDist){
+    startDist = startDist || 0;
     let cx=x0, cy=y0;
     let pts=[[cx,cy]];
     while(true){
-      if (totalSteps++ > LIMIT){ segments.push({pts,color,terminal:'LOOP'}); return; }
+      if (totalSteps++ > LIMIT){ segments.push({pts,color,terminal:'LOOP',sourceId,startDist}); return; }
       cx+=dx; cy+=dy;
-      if (cx<0||cy<0||cx>=level.size||cy>=level.size){ pts.push([cx,cy]); segments.push({pts,color,terminal:'OUT'}); return; }
+      if (cx<0||cy<0||cx>=level.size||cy>=level.size){ pts.push([cx,cy]); segments.push({pts,color,terminal:'OUT',sourceId,startDist}); return; }
       pts.push([cx,cy]);
-      if (isWall(cx,cy)){ segments.push({pts,color,terminal:'WALL'}); return; }
+      if (isWall(cx,cy)){ segments.push({pts,color,terminal:'WALL',sourceId,startDist}); return; }
       const g = goalAt(cx,cy);
       if (g){
         const key = cx+','+cy;
         goalHits[key] = (goalHits[key]||0) | color;
-        segments.push({pts,color,terminal:'GOAL'});
+        segments.push({pts,color,terminal:'GOAL',sourceId,startDist});
         return;
       }
       const stateKey = cx+','+cy+','+dx+','+dy+','+color;
-      if (visited.has(stateKey)){ segments.push({pts,color,terminal:'LOOP'}); return; }
+      if (visited.has(stateKey)){ segments.push({pts,color,terminal:'LOOP',sourceId,startDist}); return; }
       visited.add(stateKey);
 
       const el = elementAt(cx,cy);
@@ -77,18 +78,19 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
         const orient = normalizeMirrorAngle(el.rotatable ? mirrorStates[el.id] : el.orient);
         const frontSide = isFrontSide(dx, dy, orient);
         if (el.doubleSided === false && !frontSide){
-          segments.push({pts,color,terminal:'ABSORBED'});
+          segments.push({pts,color,terminal:'ABSORBED',sourceId,startDist});
           return;
         }
         if (el.filterColor){
           const reflectColor = color & el.filterColor;
           const transmitColor = color & (~el.filterColor) & 7;
-          segments.push({pts,color,terminal:'SPLIT'});
+          segments.push({pts,color,terminal:'SPLIT',sourceId,startDist});
+          const nextStart = startDist + (pts.length - 1);
           if (reflectColor){
             const [rdx,rdy]=reflectVector(dx,dy,orient);
-            walk(cx,cy,rdx,rdy,reflectColor);
+            walk(cx,cy,rdx,rdy,reflectColor,sourceId,nextStart);
           }
-          if (transmitColor){ walk(cx,cy,dx,dy,transmitColor); }
+          if (transmitColor){ walk(cx,cy,dx,dy,transmitColor,sourceId,nextStart); }
           return;
         } else {
           const [ndx,ndy] = reflectVector(dx,dy,orient);
@@ -108,7 +110,7 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
             color = el.color;
           }
           if (color === 0) {
-            segments.push({pts, color: 0, terminal: 'ABSORBED'});
+            segments.push({pts, color: 0, terminal: 'ABSORBED', sourceId, startDist});
             return;
           }
         }
@@ -119,7 +121,7 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
 
   level.sources.forEach(s => {
     const dir = (s.rotatable && sourceStates && sourceStates[s.id]) ? sourceStates[s.id] : s.dir;
-    walk(s.x, s.y, DIRS[dir][0], DIRS[dir][1], s.color);
+    walk(s.x, s.y, DIRS[dir][0], DIRS[dir][1], s.color, s.id, 0);
   });
   const goalStates = level.goals.map(g => ({ g, ok: (goalHits[g.x+','+g.y]||0)===g.color }));
   const allGoalsMet = goalStates.length>0 && goalStates.every(s=>s.ok);
