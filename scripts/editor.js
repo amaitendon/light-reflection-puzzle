@@ -37,6 +37,64 @@ let clipboard = null;            // {w,h,walls,elements,sources,goals} コピー
 let clipboardOrigin = null;      // {x0,y0} コピー/切り取り元の左上座標（Ctrl+Vで即貼り付けする際の基準位置）
 let pasteMode = false;           // true の間、次にクリックしたセルへ貼り付ける
 
+// ---- 元に戻す / やり直す（Undo / Redo）----
+let historyStack = [];           // draft のスナップショット（変更前の状態）を積む
+let redoStack = [];              // undo した内容を積む
+const MAX_HISTORY = 100;
+
+function snapshotDraftJSON(){ return JSON.stringify(draft); }
+
+// mutateFn 実行前後で draft を比較し、変化があった場合だけ履歴に積む。
+// （同じクリックで複数回呼ばれても実質変化がなければ履歴が増えないようにするため）
+function withHistory(mutateFn){
+  const before = snapshotDraftJSON();
+  mutateFn();
+  const after = snapshotDraftJSON();
+  if (before !== after){
+    historyStack.push(before);
+    if (historyStack.length > MAX_HISTORY) historyStack.shift();
+    redoStack = [];
+    updateUndoRedoButtons();
+  }
+}
+
+function resetHistory(){
+  historyStack = [];
+  redoStack = [];
+  updateUndoRedoButtons();
+}
+
+function undo(){
+  if (historyStack.length === 0){ toast('これ以上元に戻せません'); return; }
+  redoStack.push(snapshotDraftJSON());
+  draft = JSON.parse(historyStack.pop());
+  selection = null;
+  pasteMode = false;
+  updateSelectionUI();
+  sizeVal.textContent = draft.size + ' × ' + draft.size;
+  renderEditor();
+  updateUndoRedoButtons();
+}
+
+function redo(){
+  if (redoStack.length === 0){ toast('やり直せる操作がありません'); return; }
+  historyStack.push(snapshotDraftJSON());
+  draft = JSON.parse(redoStack.pop());
+  selection = null;
+  pasteMode = false;
+  updateSelectionUI();
+  sizeVal.textContent = draft.size + ' × ' + draft.size;
+  renderEditor();
+  updateUndoRedoButtons();
+}
+
+function updateUndoRedoButtons(){
+  const undoBtn = $('#editUndoBtn');
+  const redoBtn = $('#editRedoBtn');
+  if (undoBtn) undoBtn.disabled = historyStack.length === 0;
+  if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+}
+
 const selectionRow = $('#selectionRow');
 const selCopyBtn = $('#selCopyBtn');
 const selCutBtn = $('#selCutBtn');
@@ -273,11 +331,13 @@ editorZoomVal.textContent = Math.round(editorZoom * 100) + '%';
 
 function setDraftSize(n){
   n = Math.max(MIN_BOARD_SIZE, Math.min(MAX_BOARD_SIZE, n));
-  draft.size = n;
-  draft.walls = draft.walls.filter(w => w[0]<n && w[1]<n);
-  draft.elements = draft.elements.filter(e => e.x<n && e.y<n);
-  draft.sources = draft.sources.filter(s => s.x<n && s.y<n);
-  draft.goals = draft.goals.filter(g => g.x<n && g.y<n);
+  withHistory(() => {
+    draft.size = n;
+    draft.walls = draft.walls.filter(w => w[0]<n && w[1]<n);
+    draft.elements = draft.elements.filter(e => e.x<n && e.y<n);
+    draft.sources = draft.sources.filter(s => s.x<n && s.y<n);
+    draft.goals = draft.goals.filter(g => g.x<n && g.y<n);
+  });
   sizeVal.textContent = n + ' × ' + n;
   selection = null;
   pasteMode = false;
@@ -329,29 +389,31 @@ function copySelectionToClipboard(){
 function pasteAt(x0, y0){
   if (!clipboard) { toast('コピーまたは切り取りをしてから貼り付けてね'); return; }
   const size = draft.size;
-  for (let dy=0; dy<clipboard.h; dy++){
-    for (let dx=0; dx<clipboard.w; dx++){
-      const tx = x0+dx, ty = y0+dy;
-      if (tx<0||ty<0||tx>=size||ty>=size) continue;
-      clearCellInDraft(tx,ty);
+  withHistory(() => {
+    for (let dy=0; dy<clipboard.h; dy++){
+      for (let dx=0; dx<clipboard.w; dx++){
+        const tx = x0+dx, ty = y0+dy;
+        if (tx<0||ty<0||tx>=size||ty>=size) continue;
+        clearCellInDraft(tx,ty);
+      }
     }
-  }
-  clipboard.walls.forEach(([dx,dy]) => {
-    const tx = x0+dx, ty = y0+dy;
-    if (tx<0||ty<0||tx>=size||ty>=size) return;
-    draft.walls.push([tx,ty]);
-  });
-  const placeAll = (list, targetArr) => {
-    list.forEach(item => {
-      const { dx, dy, ...rest } = item;
+    clipboard.walls.forEach(([dx,dy]) => {
       const tx = x0+dx, ty = y0+dy;
       if (tx<0||ty<0||tx>=size||ty>=size) return;
-      targetArr.push({ ...rest, id: nextId(), x: tx, y: ty });
+      draft.walls.push([tx,ty]);
     });
-  };
-  placeAll(clipboard.elements, draft.elements);
-  placeAll(clipboard.sources, draft.sources);
-  placeAll(clipboard.goals, draft.goals);
+    const placeAll = (list, targetArr) => {
+      list.forEach(item => {
+        const { dx, dy, ...rest } = item;
+        const tx = x0+dx, ty = y0+dy;
+        if (tx<0||ty<0||tx>=size||ty>=size) return;
+        targetArr.push({ ...rest, id: nextId(), x: tx, y: ty });
+      });
+    };
+    placeAll(clipboard.elements, draft.elements);
+    placeAll(clipboard.sources, draft.sources);
+    placeAll(clipboard.goals, draft.goals);
+  });
   toast('貼り付けました');
   renderEditor();
 }
@@ -371,7 +433,7 @@ selCopyBtn.addEventListener('click', () => {
 selCutBtn.addEventListener('click', () => {
   const s = normalizedSelection();
   if (!copySelectionToClipboard()) return;
-  removeItemsInRect(s.x0, s.y0, s.x1, s.y1);
+  withHistory(() => { removeItemsInRect(s.x0, s.y0, s.x1, s.y1); });
   toast('切り取りました');
   renderEditor();
 });
@@ -391,9 +453,18 @@ selClearBtn.addEventListener('click', () => {
 
 document.addEventListener('keydown', (e) => {
   if (!panelEditor.classList.contains('active')) return;
-  if (currentTool !== 'select') return;
   const tag = (document.activeElement && document.activeElement.tagName) || '';
   if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+  // 元に戻す/やり直すは選択ツール以外でも使えるようにする
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z'){
+    e.preventDefault(); undo(); return;
+  }
+  if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))){
+    e.preventDefault(); redo(); return;
+  }
+
+  if (currentTool !== 'select') return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c'){ e.preventDefault(); selCopyBtn.click(); }
   else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'x'){ e.preventDefault(); selCutBtn.click(); }
   else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v'){
@@ -419,75 +490,83 @@ function onEditorCellClick(x,y){
   if (currentTool === 'select' || pasteMode) return; // 選択・貼り付けは専用のドラッグ/クリック処理で扱う
   const elHere = draft.elements.find(e=>e.x===x&&e.y===y);
 
-  if (currentTool==='erase'){ clearCellInDraft(x,y); renderEditor(); return; }
+  if (currentTool==='erase'){ withHistory(() => { clearCellInDraft(x,y); }); renderEditor(); return; }
 
-  if (currentTool==='wall'){ clearCellInDraft(x,y); draft.walls.push([x,y]); renderEditor(); return; }
+  if (currentTool==='wall'){ withHistory(() => { clearCellInDraft(x,y); draft.walls.push([x,y]); }); renderEditor(); return; }
 
   if (currentTool==='mirror'){
-    if (elHere && elHere.kind==='mirror'){
-      elHere.rotatable = mirrorRotatable;
-      elHere.doubleSided = mirrorDoubleSided;
-      elHere.filterColor = mirrorFilterEnabled ? mirrorFilterColor : null;
-      elHere.orient = mirrorOrient;
-    } else {
-      clearCellInDraft(x,y);
-      draft.elements.push({
-        id:nextId(),
-        kind:'mirror',
-        x, y,
-        orient: mirrorOrient,
-        rotatable: mirrorRotatable,
-        doubleSided: mirrorDoubleSided,
-        filterColor: mirrorFilterEnabled ? mirrorFilterColor : null
-      });
-    }
+    withHistory(() => {
+      if (elHere && elHere.kind==='mirror'){
+        elHere.rotatable = mirrorRotatable;
+        elHere.doubleSided = mirrorDoubleSided;
+        elHere.filterColor = mirrorFilterEnabled ? mirrorFilterColor : null;
+        elHere.orient = mirrorOrient;
+      } else {
+        clearCellInDraft(x,y);
+        draft.elements.push({
+          id:nextId(),
+          kind:'mirror',
+          x, y,
+          orient: mirrorOrient,
+          rotatable: mirrorRotatable,
+          doubleSided: mirrorDoubleSided,
+          filterColor: mirrorFilterEnabled ? mirrorFilterColor : null
+        });
+      }
+    });
     renderEditor(); return;
   }
 
   if (currentTool==='converter'){
-    if (elHere && elHere.kind==='converter'){
-      elHere.color = currentColor;
-      elHere.interactive = converterInteractive;
-      elHere.type = converterType;
-    } else {
-      clearCellInDraft(x,y);
-      draft.elements.push({
-        id:nextId(),
-        kind:'converter',
-        x, y,
-        color:currentColor,
-        interactive: converterInteractive,
-        type: converterType,
-        enabled: true
-      });
-    }
+    withHistory(() => {
+      if (elHere && elHere.kind==='converter'){
+        elHere.color = currentColor;
+        elHere.interactive = converterInteractive;
+        elHere.type = converterType;
+      } else {
+        clearCellInDraft(x,y);
+        draft.elements.push({
+          id:nextId(),
+          kind:'converter',
+          x, y,
+          color:currentColor,
+          interactive: converterInteractive,
+          type: converterType,
+          enabled: true
+        });
+      }
+    });
     renderEditor(); return;
   }
 
 
   if (currentTool==='source'){
-    const srcHere = draft.sources.find(s=>s.x===x&&s.y===y);
-    if (srcHere){
-      srcHere.color = currentColor;
-      srcHere.rotatable = sourceRotatable;
-      srcHere.dir = currentDir;
-    } else {
-      clearCellInDraft(x,y);
-      draft.sources.push({
-        id:nextId(),
-        x,
-        y,
-        dir:currentDir,
-        color:currentColor,
-        rotatable: sourceRotatable
-      });
-    }
+    withHistory(() => {
+      const srcHere = draft.sources.find(s=>s.x===x&&s.y===y);
+      if (srcHere){
+        srcHere.color = currentColor;
+        srcHere.rotatable = sourceRotatable;
+        srcHere.dir = currentDir;
+      } else {
+        clearCellInDraft(x,y);
+        draft.sources.push({
+          id:nextId(),
+          x,
+          y,
+          dir:currentDir,
+          color:currentColor,
+          rotatable: sourceRotatable
+        });
+      }
+    });
     renderEditor(); return;
   }
 
   if (currentTool==='goal'){
-    clearCellInDraft(x,y);
-    draft.goals.push({id:nextId(), x, y, color:currentColor});
+    withHistory(() => {
+      clearCellInDraft(x,y);
+      draft.goals.push({id:nextId(), x, y, color:currentColor});
+    });
     renderEditor(); return;
   }
 }
@@ -648,12 +727,18 @@ function renderEditor(){
 }
 
 $('#editClearBtn').addEventListener('click', () => {
-  draft.walls=[]; draft.elements=[]; draft.sources=[]; draft.goals=[];
+  withHistory(() => {
+    draft.walls=[]; draft.elements=[]; draft.sources=[]; draft.goals=[];
+  });
   selection = null;
   pasteMode = false;
   updateSelectionUI();
   renderEditor();
 });
+
+$('#editUndoBtn').addEventListener('click', undo);
+$('#editRedoBtn').addEventListener('click', redo);
+updateUndoRedoButtons();
 
 function draftToLevel(){
   return {
@@ -718,6 +803,7 @@ function applyStagePayload(payload){
   selection = null;
   pasteMode = false;
   updateSelectionUI();
+  resetHistory();
   renderEditor();
   toast('「' + (name || 'ステージ') + '」を読み込みました');
 }

@@ -53,6 +53,7 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
 .btn{ font-family:var(--sans); font-size:12px; letter-spacing:0.02em; padding:8px 14px; border-radius:8px; border:1px solid var(--line-strong); background:var(--panel-2); color:var(--ink); cursor:pointer; transition:all .15s ease; white-space:nowrap; }
 .btn:hover{ border-color:var(--cyan-soft); color:var(--cyan); }
 .btn:active{ transform:scale(0.96); }
+.btn:disabled{ opacity:0.4; cursor:default; pointer-events:none; }
 .btn-primary{ background:linear-gradient(135deg, var(--cyan), var(--violet)); color:#061019; border:none; font-weight:700; box-shadow:0 0 16px var(--cyan-soft); }
 .btn-primary:hover{ color:#061019; filter:brightness(1.08); }
 
