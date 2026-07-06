@@ -20,6 +20,21 @@ let lastErasedCell = null;
 const MIN_BOARD_SIZE = 3;
 const MAX_BOARD_SIZE = 14;
 
+// ---- 範囲選択 / コピー・切り取り・貼り付け ----
+let isSelecting = false;
+let selectAnchor = null;         // {x,y} ドラッグ開始セル
+let selection = null;            // {x0,y0,x1,y1} 選択範囲（盤面座標・両端含む）
+let clipboard = null;            // {w,h,walls,elements,sources,goals} コピー内容（相対座標dx,dy）
+let clipboardOrigin = null;      // {x0,y0} コピー/切り取り元の左上座標（Ctrl+Vで即貼り付けする際の基準位置）
+let pasteMode = false;           // true の間、次にクリックしたセルへ貼り付ける
+
+const selectionRow = $('#selectionRow');
+const selCopyBtn = $('#selCopyBtn');
+const selCutBtn = $('#selCutBtn');
+const selPasteBtn = $('#selPasteBtn');
+const selClearBtn = $('#selClearBtn');
+const selHint = $('#selHint');
+
 const gridE = $('#gridE');
 const boardE = $('#boardE');
 const rulerTopE = $('#rulerTopE');
@@ -120,6 +135,12 @@ document.querySelectorAll('.tool-btn').forEach(btn => {
     sourceSettingsRow.style.display = currentTool==='source' ? 'flex' : 'none';
     mirrorSettingsRow.style.display = currentTool==='mirror' ? 'flex' : 'none';
     converterSettingsRow.style.display = currentTool==='converter' ? 'flex' : 'none';
+    selectionRow.style.display = currentTool==='select' ? 'flex' : 'none';
+    if (currentTool !== 'select'){
+      pasteMode = false;
+      updateSelectionUI();
+    }
+    renderEditor();
   });
 });
 document.querySelectorAll('.dir-picker button').forEach(btn => {
@@ -150,32 +171,54 @@ function setupDragPlacement(){
   if (dragSetupDone) return;
   dragSetupDone = true;
   gridE.addEventListener('mousedown', (e) => {
+    const cell = e.target.closest('.cell');
+    if (!cell) return;
+    const x = parseInt(cell.dataset.x);
+    const y = parseInt(cell.dataset.y);
+
+    if (pasteMode){
+      pasteAt(x, y);
+      pasteMode = false;
+      updateSelectionUI();
+      return;
+    }
+    if (currentTool === 'select'){
+      isSelecting = true;
+      selectAnchor = {x,y};
+      selection = {x0:x,y0:y,x1:x,y1:y};
+      updateSelectionUI();
+      renderEditor();
+      return;
+    }
+
     isDragging = true;
     lastErasedCell = null;
-    const cell = e.target.closest('.cell');
-    if (cell){
-      const x = parseInt(cell.dataset.x);
-      const y = parseInt(cell.dataset.y);
-      onEditorCellClick(x, y);
-      lastErasedCell = `${x},${y}`;
-    }
+    onEditorCellClick(x, y);
+    lastErasedCell = `${x},${y}`;
   });
 
   gridE.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
     const cell = e.target.closest('.cell');
-    if (cell){
-      const x = parseInt(cell.dataset.x);
-      const y = parseInt(cell.dataset.y);
-      const cellKey = `${x},${y}`;
-      if (lastErasedCell !== cellKey){
-        onEditorCellClick(x, y);
-        lastErasedCell = cellKey;
-      }
+    if (!cell) return;
+    const x = parseInt(cell.dataset.x);
+    const y = parseInt(cell.dataset.y);
+
+    if (isSelecting){
+      selection = {x0:selectAnchor.x, y0:selectAnchor.y, x1:x, y1:y};
+      updateSelectionUI();
+      renderEditor();
+      return;
+    }
+    if (!isDragging) return;
+    const cellKey = `${x},${y}`;
+    if (lastErasedCell !== cellKey){
+      onEditorCellClick(x, y);
+      lastErasedCell = cellKey;
     }
   });
 
   document.addEventListener('mouseup', () => {
+    isSelecting = false;
     isDragging = false;
     lastErasedCell = null;
   });
@@ -187,35 +230,57 @@ function setupDragPlacement(){
 
   gridE.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    isDragging = true;
-    lastErasedCell = null;
     const touch = e.touches[0];
     const cell = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cell');
-    if (cell){
-      const x = parseInt(cell.dataset.x);
-      const y = parseInt(cell.dataset.y);
-      onEditorCellClick(x, y);
-      lastErasedCell = `${x},${y}`;
+    if (!cell) return;
+    const x = parseInt(cell.dataset.x);
+    const y = parseInt(cell.dataset.y);
+
+    if (pasteMode){
+      pasteAt(x, y);
+      pasteMode = false;
+      updateSelectionUI();
+      return;
     }
+    if (currentTool === 'select'){
+      isSelecting = true;
+      selectAnchor = {x,y};
+      selection = {x0:x,y0:y,x1:x,y1:y};
+      updateSelectionUI();
+      renderEditor();
+      return;
+    }
+
+    isDragging = true;
+    lastErasedCell = null;
+    onEditorCellClick(x, y);
+    lastErasedCell = `${x},${y}`;
   }, { passive: false });
 
   gridE.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
     e.preventDefault();
     const touch = e.touches[0];
     const cell = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cell');
-    if (cell){
-      const x = parseInt(cell.dataset.x);
-      const y = parseInt(cell.dataset.y);
-      const cellKey = `${x},${y}`;
-      if (lastErasedCell !== cellKey){
-        onEditorCellClick(x, y);
-        lastErasedCell = cellKey;
-      }
+    if (!cell) return;
+    const x = parseInt(cell.dataset.x);
+    const y = parseInt(cell.dataset.y);
+
+    if (isSelecting){
+      selection = {x0:selectAnchor.x, y0:selectAnchor.y, x1:x, y1:y};
+      updateSelectionUI();
+      renderEditor();
+      return;
+    }
+    if (!isDragging) return;
+    const cellKey = `${x},${y}`;
+    if (lastErasedCell !== cellKey){
+      onEditorCellClick(x, y);
+      lastErasedCell = cellKey;
     }
   }, { passive: false });
 
   gridE.addEventListener('touchend', () => {
+    isSelecting = false;
     isDragging = false;
     lastErasedCell = null;
   });
@@ -232,8 +297,131 @@ function setDraftSize(n){
   draft.sources = draft.sources.filter(s => s.x<n && s.y<n);
   draft.goals = draft.goals.filter(g => g.x<n && g.y<n);
   sizeVal.textContent = n + ' × ' + n;
+  selection = null;
+  pasteMode = false;
+  updateSelectionUI();
   renderEditor();
 }
+
+function normalizedSelection(){
+  if (!selection) return null;
+  return {
+    x0: Math.min(selection.x0, selection.x1),
+    y0: Math.min(selection.y0, selection.y1),
+    x1: Math.max(selection.x0, selection.x1),
+    y1: Math.max(selection.y0, selection.y1),
+  };
+}
+
+function updateSelectionUI(){
+  selPasteBtn.classList.toggle('active', pasteMode);
+  if (pasteMode){
+    selHint.textContent = '貼り付け先のマスをクリック';
+  } else if (selection){
+    const s = normalizedSelection();
+    const sizeTxt = `${s.x1-s.x0+1}×${s.y1-s.y0+1} マス選択中`;
+    selHint.textContent = clipboard ? `${sizeTxt}（Ctrl+Vでここに貼り付け）` : sizeTxt;
+  } else {
+    selHint.textContent = 'ドラッグしてマスを選択';
+  }
+}
+
+function copySelectionToClipboard(){
+  const s = normalizedSelection();
+  if (!s) { toast('先に範囲をドラッグして選択してね'); return null; }
+  const { x0, y0, x1, y1 } = s;
+  const inRect = (x,y) => x>=x0 && x<=x1 && y>=y0 && y<=y1;
+  const walls = draft.walls.filter(([x,y]) => inRect(x,y)).map(([x,y]) => [x-x0, y-y0]);
+  const stripToRel = (item) => {
+    const { id, x, y, ...rest } = item;
+    return { ...rest, dx: x-x0, dy: y-y0 };
+  };
+  const elements = draft.elements.filter(e => inRect(e.x,e.y)).map(stripToRel);
+  const sources = draft.sources.filter(s2 => inRect(s2.x,s2.y)).map(stripToRel);
+  const goals = draft.goals.filter(g => inRect(g.x,g.y)).map(stripToRel);
+  clipboard = { w: x1-x0+1, h: y1-y0+1, walls, elements, sources, goals };
+  clipboardOrigin = { x0, y0 };
+  return clipboard;
+}
+
+function pasteAt(x0, y0){
+  if (!clipboard) { toast('コピーまたは切り取りをしてから貼り付けてね'); return; }
+  const size = draft.size;
+  for (let dy=0; dy<clipboard.h; dy++){
+    for (let dx=0; dx<clipboard.w; dx++){
+      const tx = x0+dx, ty = y0+dy;
+      if (tx<0||ty<0||tx>=size||ty>=size) continue;
+      clearCellInDraft(tx,ty);
+    }
+  }
+  clipboard.walls.forEach(([dx,dy]) => {
+    const tx = x0+dx, ty = y0+dy;
+    if (tx<0||ty<0||tx>=size||ty>=size) return;
+    draft.walls.push([tx,ty]);
+  });
+  const placeAll = (list, targetArr) => {
+    list.forEach(item => {
+      const { dx, dy, ...rest } = item;
+      const tx = x0+dx, ty = y0+dy;
+      if (tx<0||ty<0||tx>=size||ty>=size) return;
+      targetArr.push({ ...rest, id: nextId(), x: tx, y: ty });
+    });
+  };
+  placeAll(clipboard.elements, draft.elements);
+  placeAll(clipboard.sources, draft.sources);
+  placeAll(clipboard.goals, draft.goals);
+  toast('貼り付けました');
+  renderEditor();
+}
+
+selCopyBtn.addEventListener('click', () => {
+  if (copySelectionToClipboard()) toast('コピーしました');
+});
+
+selCutBtn.addEventListener('click', () => {
+  const s = normalizedSelection();
+  if (!copySelectionToClipboard()) return;
+  const { x0, y0, x1, y1 } = s;
+  const inRect = (x,y) => x>=x0 && x<=x1 && y>=y0 && y<=y1;
+  draft.walls = draft.walls.filter(([x,y]) => !inRect(x,y));
+  draft.elements = draft.elements.filter(e => !inRect(e.x,e.y));
+  draft.sources = draft.sources.filter(s2 => !inRect(s2.x,s2.y));
+  draft.goals = draft.goals.filter(g => !inRect(g.x,g.y));
+  toast('切り取りました');
+  renderEditor();
+});
+
+selPasteBtn.addEventListener('click', () => {
+  if (!clipboard) { toast('コピーまたは切り取りをしてから貼り付けてね'); return; }
+  pasteMode = !pasteMode;
+  updateSelectionUI();
+});
+
+selClearBtn.addEventListener('click', () => {
+  selection = null;
+  pasteMode = false;
+  updateSelectionUI();
+  renderEditor();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (!panelEditor.classList.contains('active')) return;
+  if (currentTool !== 'select') return;
+  const tag = (document.activeElement && document.activeElement.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c'){ e.preventDefault(); selCopyBtn.click(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'x'){ e.preventDefault(); selCutBtn.click(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v'){
+    e.preventDefault();
+    if (!clipboard){ toast('コピーまたは切り取りをしてから貼り付けてね'); return; }
+    // クリックして選んだマスがあればそこへ、無ければコピー/切り取り元の位置へ貼り付ける
+    const target = normalizedSelection() || clipboardOrigin;
+    pasteMode = false;
+    pasteAt(target.x0, target.y0);
+    updateSelectionUI();
+  }
+  else if (e.key === 'Escape'){ selClearBtn.click(); }
+});
 
 function clearCellInDraft(x,y){
   draft.walls = draft.walls.filter(w => !(w[0]===x && w[1]===y));
@@ -243,6 +431,7 @@ function clearCellInDraft(x,y){
 }
 
 function onEditorCellClick(x,y){
+  if (currentTool === 'select' || pasteMode) return; // 選択・貼り付けは専用のドラッグ/クリック処理で扱う
   const elHere = draft.elements.find(e=>e.x===x&&e.y===y);
 
   if (currentTool==='erase'){ clearCellInDraft(x,y); renderEditor(); return; }
@@ -471,6 +660,9 @@ function renderEditor(){
       cell.dataset.x = xx;
       cell.dataset.y = yy;
       buildCellVisual(cell, xx, yy);
+      if (pasteMode) cell.classList.add('paste-armed');
+      const s = normalizedSelection();
+      if (s && xx>=s.x0 && xx<=s.x1 && yy>=s.y0 && yy<=s.y1) cell.classList.add('selected');
       cell.addEventListener('click', () => onEditorCellClick(xx,yy));
       gridE.appendChild(cell);
     }
@@ -487,6 +679,9 @@ function renderEditor(){
 
 $('#editClearBtn').addEventListener('click', () => {
   draft.walls=[]; draft.elements=[]; draft.sources=[]; draft.goals=[];
+  selection = null;
+  pasteMode = false;
+  updateSelectionUI();
   renderEditor();
 });
 
@@ -551,6 +746,9 @@ function applyStagePayload(payload){
     $('#officialTags').value = tags.join(', ');
   }
   sizeVal.textContent = draft.size + ' × ' + draft.size;
+  selection = null;
+  pasteMode = false;
+  updateSelectionUI();
   renderEditor();
   toast('「' + (name || 'ステージ') + '」を読み込みました');
 }

@@ -248,14 +248,14 @@ function recompute(){
   const total = goalStates.length;
 
   if (allGoalsMet){
-    statusEl.textContent = `すべてのゴール(${total})に到達！クリア！`;
+    statusEl.textContent = `ゴール ${satisfied}/${total}`;
     statusEl.className = 'hud-msg ok';
     setTimeout(showClearBanner, 450);
   } else if (satisfied > 0){
-    statusEl.textContent = `ゴール ${satisfied}/${total} 達成 — まだ色が合っていない場所がある`;
+    statusEl.textContent = `ゴール ${satisfied}/${total}`;
     statusEl.className = 'hud-msg mid';
   } else {
-    statusEl.textContent = `ゴール 0/${total} 達成 — 光を届けよう`;
+    statusEl.textContent = `ゴール ${satisfied}/${total}`;
     statusEl.className = 'hud-msg bad';
   }
 }

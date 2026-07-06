@@ -39,6 +39,15 @@
         <button class="tool-btn" data-tool="source"><span class="tool-swatch source"></span>光源</button>
         <button class="tool-btn" data-tool="goal"><span class="tool-swatch goal"></span>ゴール</button>
         <button class="tool-btn" data-tool="erase"><span class="tool-swatch erase"></span>消す</button>
+        <button class="tool-btn" data-tool="select"><span class="tool-swatch select"></span>範囲選択</button>
+      </div>
+      <div class="toolbar-row" id="selectionRow" style="display:none;">
+        <span class="toolbar-label">選択範囲</span>
+        <button id="selCopyBtn" class="btn">コピー</button>
+        <button id="selCutBtn" class="btn">切り取り</button>
+        <button id="selPasteBtn" class="btn">貼り付け</button>
+        <button id="selClearBtn" class="btn">選択解除</button>
+        <span class="toolbar-label" id="selHint" style="margin-left:6px;"></span>
       </div>
       <div class="toolbar-row" id="dirRow" style="display:none;">
         <span class="toolbar-label">光の向き</span>
