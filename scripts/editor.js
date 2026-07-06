@@ -282,7 +282,7 @@ function updateSelectionUI(){
   } else if (selection){
     const s = normalizedSelection();
     const sizeTxt = `${s.x1-s.x0+1}×${s.y1-s.y0+1} マス選択中`;
-    selHint.textContent = clipboard ? `${sizeTxt}（Ctrl+Vでここに貼り付け）` : sizeTxt;
+    selHint.textContent = clipboard ? `${sizeTxt}` : sizeTxt;
   } else {
     selHint.textContent = 'ドラッグしてマスを選択';
   }
