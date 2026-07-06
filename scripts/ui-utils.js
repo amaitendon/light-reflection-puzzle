@@ -19,9 +19,12 @@ function toast(msg){
    といった食い違いがバグの温床になっていた。
    盤面サイズに関する計算・DOM反映はすべてこの関数に一本化し、
    呼び出し側は「どの要素を使うか」と「最大セルサイズ」だけを渡す。 */
-function layoutBoard({ wrapEl, gridEl, boardEl, rulerTopEl, rulerLeftEl, svgEl, size, maxCellPx, minCellPx = 26, maxWrapPx = 560 }){
+function layoutBoard({ wrapEl, gridEl, boardEl, rulerTopEl, rulerLeftEl, svgEl, size, maxCellPx, minCellPx = 26, maxWrapPx = 560, zoom = 1 }){
   const wrapWidth = Math.min(maxWrapPx, (wrapEl.clientWidth - 40) || 480);
-  const cellPx = Math.max(minCellPx, Math.min(maxCellPx, Math.floor(wrapWidth / size)));
+  // 「枠にちょうど収まる」基準サイズを求めたうえで、zoom 倍率をかけて実際のセルサイズを決める。
+  // zoom > 1 で枠より広くなる場合は board-wrap 側の横スクロールで対応する（見た目のセルサイズはユーザーが調整可能）。
+  const baseCellPx = Math.max(minCellPx, Math.min(maxCellPx, Math.floor(wrapWidth / size)));
+  const cellPx = Math.max(minCellPx, Math.round(baseCellPx * zoom));
   const total = cellPx * size;
 
   gridEl.style.gridTemplateColumns = `repeat(${size}, ${cellPx}px)`;

@@ -31,6 +31,12 @@
           <span class="size-val" id="sizeVal">8 × 8</span>
           <button id="sizeUp">＋</button>
         </div>
+        <span class="toolbar-label">表示サイズ</span>
+        <div class="size-ctrl">
+          <button id="editorZoomDown">−</button>
+          <span class="size-val" id="editorZoomVal">100%</span>
+          <button id="editorZoomUp">＋</button>
+        </div>
       </div>
       <div class="toolbar-row" id="toolButtons">
         <button class="tool-btn" data-tool="wall"><span class="tool-swatch wall"></span>壁</button>
@@ -174,6 +180,14 @@
         <div class="hud-title" id="playTitle">ステージ</div>
         <div class="hud-msg" id="statusMsg">ミラーをクリックして光の向きを変えよう</div>
         <button id="resetBtn" class="btn">↺ リセット</button>
+      </div>
+      <div class="toolbar-row zoom-row">
+        <span class="toolbar-label">表示サイズ</span>
+        <div class="size-ctrl">
+          <button id="playZoomDown">−</button>
+          <span class="size-val" id="playZoomVal">100%</span>
+          <button id="playZoomUp">＋</button>
+        </div>
       </div>
       <div class="board-wrap">
         <div class="board-frame">

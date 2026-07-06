@@ -20,6 +20,15 @@ let lastErasedCell = null;
 const MIN_BOARD_SIZE = 3;
 const MAX_BOARD_SIZE = 14;
 
+// ---- 表示サイズ（セルのピクセルサイズの倍率）----
+// 盤のマス数(MIN/MAX_BOARD_SIZE)とは別に、見た目のセルサイズをユーザーが調整できるようにする。
+const EDITOR_ZOOM_MIN = 0.5;
+const EDITOR_ZOOM_MAX = 2.0;
+const EDITOR_ZOOM_STEP = 0.1;
+let editorZoom = parseFloat(localStorage.getItem('lightPuzzle.editorZoom'));
+if (!isFinite(editorZoom)) editorZoom = 1;
+editorZoom = Math.max(EDITOR_ZOOM_MIN, Math.min(EDITOR_ZOOM_MAX, editorZoom));
+
 // ---- 範囲選択 / コピー・切り取り・貼り付け ----
 let isSelecting = false;
 let selectAnchor = null;         // {x,y} ドラッグ開始セル
@@ -250,6 +259,17 @@ function setupDragPlacement(){
 
 $('#sizeUp').addEventListener('click', () => setDraftSize(draft.size + 1));
 $('#sizeDown').addEventListener('click', () => setDraftSize(draft.size - 1));
+
+const editorZoomVal = $('#editorZoomVal');
+function setEditorZoom(z){
+  editorZoom = Math.max(EDITOR_ZOOM_MIN, Math.min(EDITOR_ZOOM_MAX, Math.round(z * 100) / 100));
+  localStorage.setItem('lightPuzzle.editorZoom', editorZoom);
+  editorZoomVal.textContent = Math.round(editorZoom * 100) + '%';
+  renderEditor();
+}
+$('#editorZoomUp').addEventListener('click', () => setEditorZoom(editorZoom + EDITOR_ZOOM_STEP));
+$('#editorZoomDown').addEventListener('click', () => setEditorZoom(editorZoom - EDITOR_ZOOM_STEP));
+editorZoomVal.textContent = Math.round(editorZoom * 100) + '%';
 
 function setDraftSize(n){
   n = Math.max(MIN_BOARD_SIZE, Math.min(MAX_BOARD_SIZE, n));
@@ -605,6 +625,7 @@ function renderEditor(){
     rulerLeftEl: rulerLeftE,
     size,
     maxCellPx: 68,
+    zoom: editorZoom,
   });
 
   gridE.innerHTML = '';

@@ -58,7 +58,10 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
 .btn-danger{ border-color:rgba(255,93,93,0.4); color:var(--danger); }
 .btn-danger:hover{ border-color:var(--danger); background:rgba(255,93,93,0.08); }
 
-.board-wrap{ display:flex; justify-content:center; padding:8px 0; }
+.board-wrap{ display:flex; justify-content:center; justify-content:safe center; padding:8px 0; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.board-wrap::-webkit-scrollbar{ height:8px; }
+.board-wrap::-webkit-scrollbar-thumb{ background:var(--line-strong); border-radius:4px; }
+.zoom-row{ justify-content:center; }
 .board-frame{ position:relative; padding:22px 14px 14px 22px; background:var(--panel); border-radius:14px; border:1px solid var(--line-strong); box-shadow:0 20px 60px -20px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.02); }
 .ruler-top, .ruler-left{ position:absolute; color:var(--ink-dim); font-family:var(--mono); font-size:9px; }
 .ruler-top{ top:6px; left:22px; right:14px; height:14px; display:flex; }

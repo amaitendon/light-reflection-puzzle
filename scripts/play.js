@@ -21,6 +21,26 @@ let sourceStates = {};
 let cellPxP = 56;
 let cellMapP = {};
 
+// ---- 表示サイズ（セルのピクセルサイズの倍率）----
+// エディターと同様、盤面のマス数によらずプレイ時のセルサイズを調整できるようにする。
+const PLAY_ZOOM_MIN = 0.5;
+const PLAY_ZOOM_MAX = 2.0;
+const PLAY_ZOOM_STEP = 0.1;
+let playZoom = parseFloat(localStorage.getItem('lightPuzzle.playZoom'));
+if (!isFinite(playZoom)) playZoom = 1;
+playZoom = Math.max(PLAY_ZOOM_MIN, Math.min(PLAY_ZOOM_MAX, playZoom));
+
+const playZoomVal = $('#playZoomVal');
+function setPlayZoom(z){
+  playZoom = Math.max(PLAY_ZOOM_MIN, Math.min(PLAY_ZOOM_MAX, Math.round(z * 100) / 100));
+  localStorage.setItem('lightPuzzle.playZoom', playZoom);
+  playZoomVal.textContent = Math.round(playZoom * 100) + '%';
+  if (currentLevel){ buildPlayBoard(currentLevel); recompute(); }
+}
+$('#playZoomUp').addEventListener('click', () => setPlayZoom(playZoom + PLAY_ZOOM_STEP));
+$('#playZoomDown').addEventListener('click', () => setPlayZoom(playZoom - PLAY_ZOOM_STEP));
+playZoomVal.textContent = Math.round(playZoom * 100) + '%';
+
 function showPlayList(){ playListView.style.display=''; playBoardView.style.display='none'; renderStageList(); }
 function showPlayBoard(){ playListView.style.display='none'; playBoardView.style.display=''; }
 $('#backToListBtn').addEventListener('click', showPlayList);
@@ -114,6 +134,7 @@ function buildPlayBoard(level){
     svgEl: svgEl,
     size,
     maxCellPx: 84,
+    zoom: playZoom,
   });
   cellPxP = cellPx;
 
