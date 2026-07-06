@@ -250,7 +250,7 @@ function recompute(){
   if (allGoalsMet){
     statusEl.textContent = `ゴール ${satisfied}/${total}`;
     statusEl.className = 'hud-msg ok';
-    setTimeout(showClearBanner, 450);
+    if (!currentMeta.isTest) setTimeout(showClearBanner, 450);
   } else if (satisfied > 0){
     statusEl.textContent = `ゴール ${satisfied}/${total}`;
     statusEl.className = 'hud-msg mid';

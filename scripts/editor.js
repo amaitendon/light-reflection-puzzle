@@ -40,7 +40,6 @@ const boardE = $('#boardE');
 const rulerTopE = $('#rulerTopE');
 const rulerLeftE = $('#rulerLeftE');
 const sizeVal = $('#sizeVal');
-const editorMsg = $('#editorMsg');
 const dirRow = $('#dirRow');
 const colorRow = $('#colorRow');
 const colorPicker = $('#colorPicker');
@@ -669,12 +668,6 @@ function renderEditor(){
   }
 
   setupDragPlacement();
-
-  const nS = draft.sources.length, nG = draft.goals.length;
-  if (nS===0 && nG===0) editorMsg.textContent = '光源とゴールを配置しよう';
-  else if (nS===0) editorMsg.textContent = '光源がまだない';
-  else if (nG===0) editorMsg.textContent = 'ゴールがまだない';
-  else editorMsg.textContent = `光源${nS}・ゴール${nG}。準備完了、テストプレイで確認しよう`;
 }
 
 $('#editClearBtn').addEventListener('click', () => {
@@ -704,7 +697,6 @@ function validateDraft(){
 }
 
 $('#testPlayBtn').addEventListener('click', () => {
-  if (!validateDraft()) return;
   const level = draftToLevel();
   const nameField = $('#nameInput').value.trim();
   showTab('play');
