@@ -102,17 +102,23 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
         const isEnabled = (converterStates && el.id in converterStates) ? converterStates[el.id] : (el.enabled !== false);
         if (isEnabled) {
           const type = el.type || 'replace';
+          let newColor = color;
           if (type === 'add') {
-            color = color | el.color;
+            newColor = color | el.color;
           } else if (type === 'remove') {
-            color = color & (~el.color) & 7;
+            newColor = color & (~el.color) & 7;
           } else {
-            color = el.color;
+            newColor = el.color;
           }
-          if (color === 0) {
-            segments.push({pts, color: 0, terminal: 'ABSORBED', sourceId, startDist});
+          // パネルの位置で線分を区切る（パネル通過前後で色を変えて描画するため）
+          segments.push({pts, color, terminal:'CONVERT', sourceId, startDist});
+          const nextStart = startDist + (pts.length - 1);
+          if (newColor === 0) {
+            segments.push({pts:[[cx,cy]], color:0, terminal:'ABSORBED', sourceId, startDist: nextStart});
             return;
           }
+          walk(cx, cy, dx, dy, newColor, sourceId, nextStart);
+          return;
         }
         continue;
       }
