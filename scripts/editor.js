@@ -442,13 +442,7 @@ function onEditorCellClick(x,y){
       elHere.rotatable = mirrorRotatable;
       elHere.doubleSided = mirrorDoubleSided;
       elHere.filterColor = mirrorFilterEnabled ? mirrorFilterColor : null;
-      if (mirrorRotatable){
-        const cur = normalizeMirrorAngle(elHere.orient);
-        const idx = MIRROR_ROTATION_STEPS.indexOf(cur);
-        elHere.orient = MIRROR_ROTATION_STEPS[(idx + 1) % MIRROR_ROTATION_STEPS.length];
-      } else {
-        elHere.orient = mirrorOrient;
-      }
+      elHere.orient = mirrorOrient;
     } else {
       clearCellInDraft(x,y);
       draft.elements.push({
@@ -490,10 +484,7 @@ function onEditorCellClick(x,y){
     if (srcHere){
       srcHere.color = currentColor;
       srcHere.rotatable = sourceRotatable;
-      if (sourceRotatable){
-        const nextDir = { right:'down', down:'left', left:'up', up:'right' };
-        srcHere.dir = nextDir[srcHere.dir] || 'right';
-      }
+      srcHere.dir = currentDir;
     } else {
       clearCellInDraft(x,y);
       draft.sources.push({
