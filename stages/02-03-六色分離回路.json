@@ -1,0 +1,172 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "02-03-六色分離回路",
+  "description": "きれいに分けられました",
+  "difficulty": 2,
+  "tags": [
+    "色"
+  ],
+  "name": "02-03-六色分離回路",
+  "level": {
+    "size": 5,
+    "walls": [],
+    "elements": [
+      {
+        "id": "e270",
+        "kind": "mirror",
+        "x": 1,
+        "y": 0,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2
+      },
+      {
+        "id": "e271",
+        "kind": "mirror",
+        "x": 2,
+        "y": 0,
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4
+      },
+      {
+        "id": "e272",
+        "kind": "mirror",
+        "x": 3,
+        "y": 0,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e304",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e305",
+        "x": 2,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e306",
+        "x": 3,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e309",
+        "x": 3,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e310",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e311",
+        "x": 2,
+        "y": 2
+      }
+    ],
+    "sources": [
+      {
+        "id": "e269",
+        "x": 0,
+        "y": 0,
+        "dir": "right",
+        "color": 7,
+        "rotatable": false
+      },
+      {
+        "dir": "right",
+        "color": 7,
+        "rotatable": false,
+        "id": "e307",
+        "x": 0,
+        "y": 1
+      },
+      {
+        "dir": "right",
+        "color": 7,
+        "rotatable": false,
+        "id": "e312",
+        "x": 0,
+        "y": 2
+      }
+    ],
+    "goals": [
+      {
+        "id": "e299",
+        "x": 4,
+        "y": 0,
+        "color": 3
+      },
+      {
+        "color": 6,
+        "id": "e308",
+        "x": 4,
+        "y": 1
+      },
+      {
+        "color": 5,
+        "id": "e313",
+        "x": 4,
+        "y": 2
+      },
+      {
+        "color": 1,
+        "id": "e314",
+        "x": 3,
+        "y": 3
+      },
+      {
+        "color": 4,
+        "id": "e315",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "color": 2,
+        "id": "e316",
+        "x": 1,
+        "y": 3
+      }
+    ]
+  }
+}

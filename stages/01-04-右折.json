@@ -1,0 +1,154 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "01-04-右折",
+  "description": "見たままです",
+  "difficulty": 1,
+  "tags": [
+    "ミラー"
+  ],
+  "name": "01-04-右折",
+  "level": {
+    "size": 4,
+    "walls": [],
+    "elements": [
+      {
+        "id": "e3",
+        "kind": "mirror",
+        "x": 0,
+        "y": 0,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": false,
+        "filterColor": null
+      },
+      {
+        "id": "e4",
+        "kind": "mirror",
+        "x": 1,
+        "y": 0,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": false,
+        "filterColor": null
+      },
+      {
+        "id": "e5",
+        "kind": "mirror",
+        "x": 2,
+        "y": 0,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": false,
+        "filterColor": null
+      },
+      {
+        "id": "e6",
+        "kind": "mirror",
+        "x": 2,
+        "y": 1,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": false,
+        "filterColor": null
+      },
+      {
+        "id": "e7",
+        "kind": "mirror",
+        "x": 1,
+        "y": 1,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": false,
+        "filterColor": null
+      },
+      {
+        "id": "e8",
+        "kind": "mirror",
+        "x": 0,
+        "y": 1,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": false,
+        "filterColor": null
+      },
+      {
+        "id": "e9",
+        "kind": "mirror",
+        "x": 0,
+        "y": 2,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": false,
+        "filterColor": null
+      },
+      {
+        "id": "e10",
+        "kind": "mirror",
+        "x": 1,
+        "y": 2,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": false,
+        "filterColor": null
+      },
+      {
+        "id": "e11",
+        "kind": "mirror",
+        "x": 2,
+        "y": 2,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": false,
+        "filterColor": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "e0",
+        "x": 0,
+        "y": 3,
+        "dir": "up",
+        "color": 7,
+        "rotatable": false
+      },
+      {
+        "id": "e1",
+        "x": 1,
+        "y": 3,
+        "dir": "up",
+        "color": 7,
+        "rotatable": false
+      },
+      {
+        "id": "e2",
+        "x": 2,
+        "y": 3,
+        "dir": "up",
+        "color": 7,
+        "rotatable": false
+      }
+    ],
+    "goals": [
+      {
+        "id": "e12",
+        "x": 3,
+        "y": 0,
+        "color": 7
+      },
+      {
+        "id": "e13",
+        "x": 3,
+        "y": 1,
+        "color": 7
+      },
+      {
+        "id": "e14",
+        "x": 3,
+        "y": 2,
+        "color": 7
+      }
+    ]
+  }
+}

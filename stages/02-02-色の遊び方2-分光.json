@@ -1,0 +1,283 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "02-02-色の遊び方2-分光",
+  "description": "色のチュートリアルわかりづらいなと思って、後になってから作ったステージです",
+  "difficulty": 1,
+  "tags": [
+    "色"
+  ],
+  "name": "02-02-色の遊び方2-分光",
+  "level": {
+    "size": 7,
+    "walls": [
+      [
+        0,
+        2
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        2
+      ]
+    ],
+    "elements": [
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e97",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e98",
+        "x": 2,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e99",
+        "x": 3,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e100",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e101",
+        "x": 2,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e102",
+        "x": 3,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e106",
+        "x": 1,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e107",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e108",
+        "x": 3,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e109",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e110",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e111",
+        "x": 3,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e119",
+        "x": 6,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e120",
+        "x": 6,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e121",
+        "x": 6,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e122",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e123",
+        "x": 5,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e124",
+        "x": 5,
+        "y": 4
+      }
+    ],
+    "sources": [
+      {
+        "dir": "left",
+        "color": 7,
+        "rotatable": false,
+        "id": "e103",
+        "x": 4,
+        "y": 0
+      },
+      {
+        "dir": "right",
+        "color": 7,
+        "rotatable": false,
+        "id": "e112",
+        "x": 0,
+        "y": 3
+      },
+      {
+        "dir": "down",
+        "color": 7,
+        "rotatable": false,
+        "id": "e125",
+        "x": 6,
+        "y": 1
+      }
+    ],
+    "goals": [
+      {
+        "color": 5,
+        "id": "e104",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "color": 2,
+        "id": "e105",
+        "x": 0,
+        "y": 1
+      },
+      {
+        "color": 3,
+        "id": "e113",
+        "x": 4,
+        "y": 3
+      },
+      {
+        "color": 4,
+        "id": "e114",
+        "x": 4,
+        "y": 4
+      },
+      {
+        "color": 6,
+        "id": "e126",
+        "x": 6,
+        "y": 5
+      },
+      {
+        "color": 1,
+        "id": "e127",
+        "x": 5,
+        "y": 5
+      }
+    ]
+  }
+}

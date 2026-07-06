@@ -1,0 +1,173 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "51-01-卍格子回路",
+  "description": "",
+  "difficulty": 1,
+  "tags": [],
+  "name": "51-01-卍格子回路",
+  "level": {
+    "size": 6,
+    "walls": [],
+    "elements": [
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "color": 2,
+        "rotatable": true,
+        "filterColor": 4,
+        "id": "e399",
+        "x": 1,
+        "y": 4,
+        "doubleSided": true
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "color": 1,
+        "rotatable": true,
+        "filterColor": 2,
+        "id": "e400",
+        "x": 1,
+        "y": 3,
+        "doubleSided": true
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "color": 1,
+        "rotatable": true,
+        "filterColor": 2,
+        "id": "e401",
+        "x": 1,
+        "y": 1,
+        "doubleSided": true
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "color": 1,
+        "rotatable": true,
+        "filterColor": 2,
+        "id": "e402",
+        "x": 3,
+        "y": 1,
+        "doubleSided": true
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "color": 1,
+        "rotatable": true,
+        "filterColor": 2,
+        "id": "e403",
+        "x": 3,
+        "y": 3,
+        "doubleSided": true
+      },
+      {
+        "kind": "converter",
+        "color": 6,
+        "id": "e404",
+        "x": 1,
+        "y": 2,
+        "interactive": false,
+        "type": "replace"
+      },
+      {
+        "kind": "converter",
+        "color": 6,
+        "id": "e405",
+        "x": 2,
+        "y": 3,
+        "interactive": false,
+        "type": "replace"
+      },
+      {
+        "kind": "converter",
+        "color": 6,
+        "id": "e406",
+        "x": 3,
+        "y": 2,
+        "interactive": false,
+        "type": "replace"
+      },
+      {
+        "kind": "converter",
+        "color": 6,
+        "id": "e407",
+        "x": 2,
+        "y": 1,
+        "interactive": false,
+        "type": "replace"
+      }
+    ],
+    "sources": [
+      {
+        "id": "e568",
+        "x": 2,
+        "y": 4,
+        "dir": "left",
+        "color": 4,
+        "rotatable": false
+      }
+    ],
+    "goals": [
+      {
+        "id": "e417",
+        "x": 4,
+        "y": 1,
+        "color": 4
+      },
+      {
+        "id": "e418",
+        "x": 3,
+        "y": 0,
+        "color": 4
+      },
+      {
+        "id": "e419",
+        "x": 1,
+        "y": 0,
+        "color": 4
+      },
+      {
+        "id": "e420",
+        "x": 0,
+        "y": 1,
+        "color": 4
+      },
+      {
+        "id": "e421",
+        "x": 0,
+        "y": 3,
+        "color": 4
+      },
+      {
+        "id": "e422",
+        "x": 3,
+        "y": 5,
+        "color": 4
+      },
+      {
+        "id": "e424",
+        "x": 4,
+        "y": 3,
+        "color": 4
+      },
+      {
+        "id": "e569",
+        "x": 1,
+        "y": 5,
+        "color": 2
+      },
+      {
+        "color": 4,
+        "id": "e571",
+        "x": 4,
+        "y": 4
+      }
+    ]
+  }
+}

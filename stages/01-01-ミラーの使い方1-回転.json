@@ -1,0 +1,96 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "01-01-ミラーの使い方1-回転",
+  "description": "01-01-ミラーの使い方1-回転",
+  "difficulty": 1,
+  "tags": [
+    "ミラー"
+  ],
+  "name": "01-01-ミラーの使い方1-回転",
+  "level": {
+    "size": 5,
+    "walls": [],
+    "elements": [
+      {
+        "id": "e17",
+        "kind": "mirror",
+        "x": 2,
+        "y": 0,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e18",
+        "kind": "mirror",
+        "x": 2,
+        "y": 2,
+        "orient": 45,
+        "rotatable": false,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e19",
+        "kind": "mirror",
+        "x": 4,
+        "y": 2,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e20",
+        "kind": "mirror",
+        "x": 4,
+        "y": 4,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e22",
+        "kind": "mirror",
+        "x": 0,
+        "y": 2,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e24",
+        "kind": "mirror",
+        "x": 2,
+        "y": 4,
+        "orient": 45,
+        "rotatable": false,
+        "doubleSided": true,
+        "filterColor": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "e16",
+        "x": 0,
+        "y": 0,
+        "dir": "right",
+        "color": 7,
+        "rotatable": false
+      }
+    ],
+    "goals": [
+      {
+        "id": "e25",
+        "x": 0,
+        "y": 4,
+        "color": 7
+      }
+    ]
+  }
+}

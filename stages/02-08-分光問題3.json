@@ -1,0 +1,280 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "02-08-分光問題3",
+  "description": "チュートリアル用のを作ろうとしてたらなんかおかしなものができました。",
+  "difficulty": 3,
+  "tags": [
+    "色"
+  ],
+  "name": "02-08-分光問題3",
+  "level": {
+    "size": 6,
+    "walls": [],
+    "elements": [
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e92",
+        "x": 2,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e93",
+        "x": 3,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e94",
+        "x": 4,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e95",
+        "x": 4,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e96",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e97",
+        "x": 2,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e98",
+        "x": 3,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e99",
+        "x": 3,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e100",
+        "x": 4,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e104",
+        "x": 4,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e105",
+        "x": 3,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e106",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e107",
+        "x": 4,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e108",
+        "x": 3,
+        "y": 5
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e109",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e110",
+        "x": 3,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e111",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e112",
+        "x": 4,
+        "y": 5
+      }
+    ],
+    "sources": [
+      {
+        "dir": "right",
+        "color": 7,
+        "rotatable": false,
+        "id": "e101",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "dir": "right",
+        "color": 7,
+        "rotatable": false,
+        "id": "e102",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "dir": "right",
+        "color": 7,
+        "rotatable": false,
+        "id": "e103",
+        "x": 1,
+        "y": 2
+      }
+    ],
+    "goals": [
+      {
+        "id": "e89",
+        "x": 5,
+        "y": 0,
+        "color": 1
+      },
+      {
+        "id": "e90",
+        "x": 5,
+        "y": 1,
+        "color": 2
+      },
+      {
+        "id": "e91",
+        "x": 5,
+        "y": 2,
+        "color": 4
+      },
+      {
+        "id": "e120",
+        "x": 0,
+        "y": 2,
+        "color": 2
+      },
+      {
+        "id": "e121",
+        "x": 0,
+        "y": 3,
+        "color": 1
+      },
+      {
+        "id": "e130",
+        "x": 0,
+        "y": 5,
+        "color": 1
+      },
+      {
+        "id": "e132",
+        "x": 0,
+        "y": 4,
+        "color": 4
+      },
+      {
+        "id": "e136",
+        "x": 0,
+        "y": 1,
+        "color": 4
+      },
+      {
+        "id": "e137",
+        "x": 0,
+        "y": 0,
+        "color": 2
+      }
+    ]
+  }
+}

@@ -1,0 +1,270 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "02-04-色の遊び方3-混色-白色",
+  "description": "CMYと白を利用するお題としてなかなか悪くはないのではないでしょうか？",
+  "difficulty": 1,
+  "tags": [
+    "色"
+  ],
+  "name": "02-04-色の遊び方3-混色-白色",
+  "level": {
+    "size": 9,
+    "walls": [],
+    "elements": [
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e217",
+        "x": 1,
+        "y": 6
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e218",
+        "x": 1,
+        "y": 5
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e233",
+        "x": 4,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e234",
+        "x": 5,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e235",
+        "x": 4,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e236",
+        "x": 5,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e237",
+        "x": 4,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e238",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e239",
+        "x": 5,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e240",
+        "x": 4,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e247",
+        "x": 7,
+        "y": 5
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e248",
+        "x": 7,
+        "y": 6
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e249",
+        "x": 8,
+        "y": 6
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e250",
+        "x": 8,
+        "y": 5
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e254",
+        "x": 0,
+        "y": 8
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e255",
+        "x": 8,
+        "y": 8
+      },
+      {
+        "id": "e258",
+        "kind": "mirror",
+        "x": 0,
+        "y": 6,
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2
+      },
+      {
+        "id": "e259",
+        "kind": "mirror",
+        "x": 0,
+        "y": 5,
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1
+      }
+    ],
+    "sources": [
+      {
+        "dir": "down",
+        "color": 2,
+        "rotatable": false,
+        "id": "e219",
+        "x": 1,
+        "y": 3
+      },
+      {
+        "dir": "right",
+        "color": 1,
+        "rotatable": false,
+        "id": "e241",
+        "x": 3,
+        "y": 0
+      },
+      {
+        "dir": "right",
+        "color": 2,
+        "rotatable": false,
+        "id": "e242",
+        "x": 3,
+        "y": 1
+      },
+      {
+        "dir": "right",
+        "color": 4,
+        "rotatable": false,
+        "id": "e243",
+        "x": 3,
+        "y": 2
+      },
+      {
+        "dir": "down",
+        "color": 1,
+        "rotatable": false,
+        "id": "e251",
+        "x": 7,
+        "y": 3
+      },
+      {
+        "dir": "down",
+        "color": 4,
+        "rotatable": false,
+        "id": "e252",
+        "x": 8,
+        "y": 3
+      },
+      {
+        "dir": "down",
+        "color": 4,
+        "rotatable": false,
+        "id": "e257",
+        "x": 0,
+        "y": 3
+      }
+    ],
+    "goals": [
+      {
+        "color": 7,
+        "id": "e244",
+        "x": 3,
+        "y": 3
+      },
+      {
+        "color": 7,
+        "id": "e253",
+        "x": 4,
+        "y": 8
+      }
+    ]
+  }
+}

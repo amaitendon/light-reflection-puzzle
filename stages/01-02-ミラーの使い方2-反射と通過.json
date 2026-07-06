@@ -1,0 +1,70 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "01-02-ミラーの使い方2-反射と通過",
+  "description": "01-02-ミラーの使い方2-反射と通過",
+  "difficulty": 1,
+  "tags": [
+    "ミラー"
+  ],
+  "name": "01-02-ミラーの使い方2-反射と通過",
+  "level": {
+    "size": 4,
+    "walls": [],
+    "elements": [
+      {
+        "id": "e26",
+        "kind": "mirror",
+        "x": 2,
+        "y": 0,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e27",
+        "kind": "mirror",
+        "x": 0,
+        "y": 2,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "e24",
+        "x": 1,
+        "y": 0,
+        "dir": "right",
+        "color": 7,
+        "rotatable": false
+      },
+      {
+        "id": "e25",
+        "x": 0,
+        "y": 1,
+        "dir": "down",
+        "color": 7,
+        "rotatable": false
+      }
+    ],
+    "goals": [
+      {
+        "id": "e29",
+        "x": 0,
+        "y": 0,
+        "color": 7
+      },
+      {
+        "id": "e136",
+        "x": 3,
+        "y": 0,
+        "color": 7
+      }
+    ]
+  }
+}

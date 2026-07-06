@@ -1,0 +1,168 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "01-05-白線繋ぎ",
+  "description": "つまり、線が交差しないようにゴールまで繋ぐだけなんですよね",
+  "difficulty": 2,
+  "tags": [
+    "ミラー"
+  ],
+  "name": "01-05-白線繋ぎ",
+  "level": {
+    "size": 5,
+    "walls": [],
+    "elements": [
+      {
+        "id": "e119",
+        "kind": "mirror",
+        "x": 1,
+        "y": 1,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e120",
+        "kind": "mirror",
+        "x": 1,
+        "y": 2,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e121",
+        "kind": "mirror",
+        "x": 1,
+        "y": 3,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e122",
+        "kind": "mirror",
+        "x": 2,
+        "y": 3,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e123",
+        "kind": "mirror",
+        "x": 3,
+        "y": 3,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e124",
+        "kind": "mirror",
+        "x": 2,
+        "y": 2,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e125",
+        "kind": "mirror",
+        "x": 3,
+        "y": 1,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e126",
+        "kind": "mirror",
+        "x": 3,
+        "y": 2,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e128",
+        "kind": "mirror",
+        "x": 2,
+        "y": 1,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "e81",
+        "x": 1,
+        "y": 4,
+        "dir": "up",
+        "color": 7,
+        "rotatable": false
+      },
+      {
+        "id": "e82",
+        "x": 2,
+        "y": 4,
+        "dir": "up",
+        "color": 7,
+        "rotatable": false
+      },
+      {
+        "id": "e83",
+        "x": 3,
+        "y": 4,
+        "dir": "up",
+        "color": 7,
+        "rotatable": false
+      },
+      {
+        "id": "e103",
+        "x": 4,
+        "y": 1,
+        "dir": "left",
+        "color": 7,
+        "rotatable": false
+      }
+    ],
+    "goals": [
+      {
+        "id": "e104",
+        "x": 2,
+        "y": 0,
+        "color": 7
+      },
+      {
+        "id": "e105",
+        "x": 1,
+        "y": 0,
+        "color": 7
+      },
+      {
+        "id": "e130",
+        "x": 4,
+        "y": 2,
+        "color": 7
+      },
+      {
+        "id": "e132",
+        "x": 0,
+        "y": 1,
+        "color": 7
+      }
+    ]
+  }
+}

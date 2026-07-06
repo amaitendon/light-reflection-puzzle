@@ -1,0 +1,186 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "03-03-誰かにとっての邪魔者も",
+  "description": "",
+  "difficulty": 2,
+  "tags": [
+    "色"
+  ],
+  "name": "03-03-誰かにとっての邪魔者も",
+  "level": {
+    "size": 6,
+    "walls": [],
+    "elements": [
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e159",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e160",
+        "x": 2,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e185",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e186",
+        "x": 1,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e187",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e188",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e192",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e194",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e198",
+        "x": 4,
+        "y": 1
+      },
+      {
+        "kind": "converter",
+        "color": 4,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e199",
+        "x": 4,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e200",
+        "x": 5,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e201",
+        "x": 4,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e202",
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "sources": [
+      {
+        "dir": "right",
+        "color": 3,
+        "rotatable": false,
+        "id": "e174",
+        "x": 0,
+        "y": 1
+      },
+      {
+        "dir": "right",
+        "color": 7,
+        "rotatable": false,
+        "id": "e195",
+        "x": 0,
+        "y": 2
+      }
+    ],
+    "goals": [
+      {
+        "color": 4,
+        "id": "e203",
+        "x": 4,
+        "y": 0
+      },
+      {
+        "color": 7,
+        "id": "e204",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "color": 4,
+        "id": "e205",
+        "x": 4,
+        "y": 5
+      }
+    ]
+  }
+}

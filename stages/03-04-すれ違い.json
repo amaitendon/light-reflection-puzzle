@@ -1,0 +1,155 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "03-04-すれ違い",
+  "description": "",
+  "difficulty": 1,
+  "tags": [],
+  "name": "03-04-すれ違い",
+  "level": {
+    "size": 5,
+    "walls": [],
+    "elements": [
+      {
+        "kind": "mirror",
+        "orient": "/",
+        "color": 3,
+        "rotatable": true,
+        "filterColor": 3,
+        "id": "e429",
+        "x": 2,
+        "y": 1
+      },
+      {
+        "kind": "converter",
+        "color": 3,
+        "id": "e432",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "type": "M",
+        "orient": 90,
+        "rotatable": true,
+        "filterColor": null,
+        "doubleSided": true,
+        "id": "e433",
+        "x": 0,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "type": "M",
+        "orient": 45,
+        "rotatable": true,
+        "filterColor": null,
+        "doubleSided": true,
+        "id": "e439",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "type": "M",
+        "orient": 90,
+        "rotatable": true,
+        "filterColor": null,
+        "doubleSided": true,
+        "id": "e445",
+        "x": 0,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "type": "M",
+        "orient": "/",
+        "rotatable": true,
+        "filterColor": null,
+        "doubleSided": true,
+        "id": "e462",
+        "x": 3,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "type": "M",
+        "orient": 45,
+        "rotatable": true,
+        "filterColor": null,
+        "doubleSided": true,
+        "id": "e463",
+        "x": 3,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "type": "M",
+        "orient": 135,
+        "rotatable": true,
+        "filterColor": null,
+        "doubleSided": true,
+        "id": "e464",
+        "x": 3,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "type": "M",
+        "orient": 45,
+        "rotatable": true,
+        "filterColor": null,
+        "doubleSided": true,
+        "id": "e465",
+        "x": 3,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "type": "M",
+        "orient": 45,
+        "rotatable": true,
+        "filterColor": null,
+        "doubleSided": true,
+        "id": "e466",
+        "x": 4,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": "/",
+        "color": 4,
+        "rotatable": true,
+        "filterColor": 4,
+        "id": "e467",
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "sources": [
+      {
+        "dir": "right",
+        "color": 7,
+        "rotatable": false,
+        "id": "e436",
+        "x": 1,
+        "y": 1
+      }
+    ],
+    "goals": [
+      {
+        "id": "e17",
+        "x": 2,
+        "y": 0,
+        "color": 3
+      },
+      {
+        "color": 3,
+        "id": "e447",
+        "x": 2,
+        "y": 4
+      }
+    ]
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "51-02-卍格子回路コンパクト",
+  "description": "",
+  "difficulty": 1,
+  "tags": [],
+  "name": "51-02-卍格子回路コンパクト",
+  "level": {
+    "size": 7,
+    "walls": [],
+    "elements": [
+      {
+        "kind": "converter",
+        "color": 6,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e919",
+        "x": 4,
+        "y": 4
+      },
+      {
+        "kind": "converter",
+        "color": 6,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e920",
+        "x": 4,
+        "y": 5
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e921",
+        "x": 3,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e922",
+        "x": 3,
+        "y": 5
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e923",
+        "x": 5,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e924",
+        "x": 5,
+        "y": 5
+      },
+      {
+        "kind": "converter",
+        "color": 3,
+        "id": "e928",
+        "x": 4,
+        "y": 1
+      },
+      {
+        "kind": "converter",
+        "color": 3,
+        "id": "e929",
+        "x": 4,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e932",
+        "x": 3,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e933",
+        "x": 3,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e934",
+        "x": 5,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e935",
+        "x": 5,
+        "y": 2
+      },
+      {
+        "id": "e941",
+        "kind": "mirror",
+        "x": 1,
+        "y": 4,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e942",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e957",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e958",
+        "x": 1,
+        "y": 2
+      }
+    ],
+    "sources": [
+      {
+        "dir": "down",
+        "color": 2,
+        "rotatable": false,
+        "id": "e959",
+        "x": 2,
+        "y": 1
+      }
+    ],
+    "goals": [
+      {
+        "color": 2,
+        "id": "e937",
+        "x": 6,
+        "y": 1
+      },
+      {
+        "color": 2,
+        "id": "e938",
+        "x": 6,
+        "y": 2
+      },
+      {
+        "id": "e943",
+        "x": 0,
+        "y": 4,
+        "color": 2
+      },
+      {
+        "id": "e944",
+        "x": 0,
+        "y": 5,
+        "color": 2
+      },
+      {
+        "id": "e945",
+        "x": 6,
+        "y": 4,
+        "color": 2
+      },
+      {
+        "id": "e946",
+        "x": 6,
+        "y": 5,
+        "color": 2
+      },
+      {
+        "color": 2,
+        "id": "e960",
+        "x": 2,
+        "y": 0
+      },
+      {
+        "color": 2,
+        "id": "e961",
+        "x": 1,
+        "y": 1
+      }
+    ]
+  }
+}

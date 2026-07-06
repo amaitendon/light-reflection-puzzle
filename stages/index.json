@@ -1,4 +1,198 @@
 {
   "stages": [
+    {
+      "id": "stage-001",
+      "file": "stages/01-01-ミラーの使い方1-回転.json",
+      "title": "01-01-ミラーの使い方1-回転",
+      "difficulty": 1,
+      "tags": [
+        "ミラー"
+      ],
+      "description": "01-01-ミラーの使い方1-回転"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/01-02-ミラーの使い方2-反射と通過.json",
+      "title": "01-02-ミラーの使い方2-反射と通過",
+      "difficulty": 1,
+      "tags": [
+        "ミラー"
+      ],
+      "description": "01-02-ミラーの使い方2-反射と通過"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/01-03-ミラーの使い方3-片面ミラーと両面ミラー.json",
+      "title": "01-03-ミラーの使い方3-片面と両面",
+      "difficulty": 1,
+      "tags": [
+        "ミラー"
+      ],
+      "description": "01-03-ミラーの使い方3-片面ミラーと両面ミラー"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/01-04-右折.json",
+      "title": "01-04-右折",
+      "difficulty": 1,
+      "tags": [
+        "ミラー"
+      ],
+      "description": "見たままです"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/01-05-白線繋ぎ.json",
+      "title": "01-05-白線繋ぎ",
+      "difficulty": 2,
+      "tags": [
+        "ミラー"
+      ],
+      "description": "つまり、線が交差しないようにゴールまで繋ぐだけなんですよね"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/01-06-選ばれぬ者.json",
+      "title": "01-06-選ばれぬ者",
+      "difficulty": 1,
+      "tags": [
+        "ミラー"
+      ],
+      "description": "片面ミラーの使い道について考えていました。"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/02-01-色の遊び方1-RGB.json",
+      "title": "02-01-色の遊び方1-RGB",
+      "difficulty": 1,
+      "tags": [
+        "色"
+      ],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/02-02-色の遊び方2-分光.json",
+      "title": "02-02-色の遊び方2-分光",
+      "difficulty": 1,
+      "tags": [
+        "色"
+      ],
+      "description": "色のチュートリアルわかりづらいなと思って、後になってから作ったステージです"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/02-03-六色分離回路.json",
+      "title": "02-03-六色分離回路",
+      "difficulty": 2,
+      "tags": [
+        "色"
+      ],
+      "description": "きれいに分けられました"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/02-04-色の遊び方3-混色-白色.json",
+      "title": "02-04-色の遊び方3-混色-白色",
+      "difficulty": 1,
+      "tags": [
+        "色"
+      ],
+      "description": "CMYと白を利用するお題としてなかなか悪くはないのではないでしょうか？"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/02-05-色の遊び方4-混色-CMY.json",
+      "title": "02-05-色の遊び方4-混色-CMY",
+      "difficulty": 2,
+      "tags": [
+        "色"
+      ],
+      "description": "なかなかいいものができました。そう私は思っています。"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/02-06-分光問題1.json",
+      "title": "02-06-分光問題1",
+      "difficulty": 2,
+      "tags": [
+        "色"
+      ],
+      "description": "チュートリアルにしようと思って作ったステージですが、ちょっと見た目がキモいのでやめました"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/02-07-分光問題2.json",
+      "title": "02-07-分光問題2",
+      "difficulty": 2,
+      "tags": [
+        "色"
+      ],
+      "description": "いろんなパターンが作れます"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/02-08-分光問題3.json",
+      "title": "02-08-分光問題3",
+      "difficulty": 3,
+      "tags": [
+        "色"
+      ],
+      "description": "チュートリアル用のを作ろうとしてたらなんかおかしなものができました。"
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/03-01-色変換パネルの使い方1-変換.json",
+      "title": "03-01-色変換パネルの使い方1-変換",
+      "difficulty": 2,
+      "tags": [
+        "色"
+      ],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/03-02-色変換パネルの使い方2-増殖.json",
+      "title": "03-02-色変換パネルの使い方2-増殖",
+      "difficulty": 2,
+      "tags": [
+        "色"
+      ],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/03-03-誰かにとっての邪魔者も.json",
+      "title": "03-03-誰かにとっての邪魔者も",
+      "difficulty": 2,
+      "tags": [
+        "色"
+      ],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/03-04-すれ違い.json",
+      "title": "03-04-すれ違い",
+      "difficulty": 1,
+      "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/51-01-卍格子回路.json",
+      "title": "51-01-卍格子回路",
+      "difficulty": 1,
+      "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/51-02-卍格子回路コンパクト.json",
+      "title": "51-02-卍格子回路コンパクト",
+      "difficulty": 1,
+      "tags": [],
+      "description": ""
+    }
   ]
 }
