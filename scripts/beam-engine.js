@@ -131,5 +131,5 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
   });
   const goalStates = level.goals.map(g => ({ g, ok: (goalHits[g.x+','+g.y]||0)===g.color }));
   const allGoalsMet = goalStates.length>0 && goalStates.every(s=>s.ok);
-  return { segments, allGoalsMet, goalStates };
+  return { segments, allGoalsMet, goalStates, goalHits };
 }

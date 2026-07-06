@@ -408,3 +408,44 @@ $('#clearBack').addEventListener('click', () => {
 $('#resetBtn').addEventListener('click', () => {
   loadLevel(currentLevel, currentMeta.name, currentMeta.savedId, currentMeta.isTest);
 });
+
+const autoSolveBtn = $('#autoSolveBtn');
+autoSolveBtn.addEventListener('click', () => runAutoSolve());
+
+async function runAutoSolve(){
+  if (!currentLevel) return;
+  autoSolveBtn.disabled = true;
+  const prevText = statusEl.textContent;
+  const prevClass = statusEl.className;
+  statusEl.textContent = '解を探索中…';
+  statusEl.className = 'hud-msg mid';
+  // 探索前にメッセージを画面へ反映させるため、1フレーム分待ってから重い処理を始める
+  await new Promise(resolve => setTimeout(resolve, 30));
+
+  let result;
+  try {
+    result = solveLevel(currentLevel, { timeLimitMs: 6000 });
+  } catch (err) {
+    console.error(err);
+    result = null;
+  }
+
+  autoSolveBtn.disabled = false;
+
+  if (result && result.solved){
+    mirrorStates = result.mirrorStates;
+    converterStates = result.converterStates;
+    sourceStates = result.sourceStates;
+    buildPlayBoard(currentLevel);
+    recompute();
+  } else {
+    statusEl.textContent = '解が見つかりませんでした（もう一度試すと見つかることがあります）';
+    statusEl.className = 'hud-msg bad';
+    setTimeout(() => {
+      if (statusEl.textContent === '解が見つかりませんでした（もう一度試すと見つかることがあります）'){
+        statusEl.textContent = prevText;
+        statusEl.className = prevClass;
+      }
+    }, 2800);
+  }
+}
