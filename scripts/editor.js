@@ -11,8 +11,8 @@ let currentColor = 7;
 let mirrorOrient = 45;
 let mirrorRotatable = true;
 let mirrorDoubleSided = true;
-let mirrorFilterEnabled = false;
 let mirrorFilterColor = 7;
+let mirrorAngleOnlyMode = false;
 let sourceRotatable = false;
 
 let isDragging = false;
@@ -107,15 +107,15 @@ const boardE = $('#boardE');
 const rulerTopE = $('#rulerTopE');
 const rulerLeftE = $('#rulerLeftE');
 const sizeVal = $('#sizeVal');
-const dirRow = $('#dirRow');
 const colorRow = $('#colorRow');
 const colorPicker = $('#colorPicker');
 const mirrorSettingsRow = $('#mirrorSettingsRow');
 const mirrorOrientPicker = $('#mirrorOrientPicker');
 const mirrorRotatableCheck = $('#mirrorRotatable');
 const mirrorDoubleSidedCheck = $('#mirrorDoubleSided');
-const mirrorFilterEnabledCheck = $('#mirrorFilterEnabled');
 const mirrorFilterColorPicker = $('#mirrorFilterColorPicker');
+const mirrorAngleOnlyModeCheck = $('#mirrorAngleOnlyMode');
+const mirrorAngleOnlyHint = $('#mirrorAngleOnlyHint');
 
 let converterInteractive = false;
 let converterType = 'replace';
@@ -135,6 +135,7 @@ document.querySelectorAll('input[name="converterType"]').forEach(radio => {
 });
 
 const sourceSettingsRow = $('#sourceSettingsRow');
+const sourceColorPicker = $('#sourceColorPicker');
 const sourceRotatableCheck = $('#sourceRotatable');
 
 sourceRotatableCheck.checked = sourceRotatable;
@@ -142,27 +143,41 @@ sourceRotatableCheck.addEventListener('change', () => {
   sourceRotatable = sourceRotatableCheck.checked;
 });
 
-const NEEDS_COLOR = new Set(['source','goal','converter','mirror']);
 
 // 通常カラーピッカーとミラーフィルターカラーピッカーは、生成処理を共通化する。
-function buildColorSwatchPicker(container, activeSelector, onSelect){
+// 光源・色変換パネル・ミラーの色フィルターは「今選んでいる色」を1つの状態として共有し、
+// どのパネルに切り替えても直前に選んだ色がそのまま引き継がれるようにする。
+function buildColorSwatchPicker(container, onSelect){
   COLORS.forEach(c => {
     const b = document.createElement('button');
     b.className = 'color-swatch-btn';
     b.style.background = c.hex;
     b.title = c.name;
     b.dataset.bits = c.bits;
-    b.addEventListener('click', () => {
-      onSelect(c.bits);
-      document.querySelectorAll(activeSelector).forEach(x=>x.classList.toggle('active', x===b));
-    });
+    b.addEventListener('click', () => { onSelect(c.bits); });
     container.appendChild(b);
   });
-  container.children[container.children.length-1].classList.add('active'); // default white
 }
 
-buildColorSwatchPicker(colorPicker, '.color-swatch-btn', bits => { currentColor = bits; });
-buildColorSwatchPicker(mirrorFilterColorPicker, '#mirrorFilterColorPicker .color-swatch-btn', bits => { mirrorFilterColor = bits; });
+function setActiveSwatch(container, bits){
+  container.querySelectorAll('.color-swatch-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.bits, 10) === bits);
+  });
+}
+
+// 光源色・パネル色・ミラーフィルター色をまとめて更新し、各カラーピッカーの見た目も同期する。
+function setSharedColor(bits){
+  currentColor = bits;
+  mirrorFilterColor = bits;
+  setActiveSwatch(colorPicker, bits);
+  setActiveSwatch(mirrorFilterColorPicker, bits);
+  setActiveSwatch(sourceColorPicker, bits);
+}
+
+buildColorSwatchPicker(colorPicker, bits => { setSharedColor(bits); });
+buildColorSwatchPicker(mirrorFilterColorPicker, bits => { setSharedColor(bits); });
+buildColorSwatchPicker(sourceColorPicker, bits => { setSharedColor(bits); });
+setSharedColor(currentColor); // 初期値（白）を各ピッカーに反映
 
 function setMirrorOrientActive(angle){
   document.querySelectorAll('#mirrorOrientPicker button').forEach(btn => {
@@ -188,8 +203,7 @@ document.querySelectorAll('.tool-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     currentTool = btn.dataset.tool;
     document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b===btn));
-    dirRow.style.display = currentTool==='source' ? 'flex' : 'none';
-    colorRow.style.display = NEEDS_COLOR.has(currentTool) && currentTool!=='mirror' ? 'flex' : 'none';
+    colorRow.style.display = (currentTool==='goal' || currentTool==='converter') ? 'flex' : 'none';
     sourceSettingsRow.style.display = currentTool==='source' ? 'flex' : 'none';
     mirrorSettingsRow.style.display = currentTool==='mirror' ? 'flex' : 'none';
     converterSettingsRow.style.display = currentTool==='converter' ? 'flex' : 'none';
@@ -201,14 +215,14 @@ document.querySelectorAll('.tool-btn').forEach(btn => {
     renderEditor();
   });
 });
-document.querySelectorAll('#dirRow .dir-picker button').forEach(btn => {
+document.querySelectorAll('#sourceDirPicker button').forEach(btn => {
   btn.addEventListener('click', () => {
     currentDir = btn.dataset.dir;
-    document.querySelectorAll('#dirRow .dir-picker button').forEach(b => b.classList.toggle('active', b===btn));
+    document.querySelectorAll('#sourceDirPicker button').forEach(b => b.classList.toggle('active', b===btn));
   });
 });
 document.querySelector('[data-tool="wall"]').classList.add('active');
-document.querySelector('#dirRow [data-dir="right"]').classList.add('active');
+document.querySelector('#sourceDirPicker [data-dir="right"]').classList.add('active');
 
 mirrorRotatableCheck.addEventListener('change', () => {
   mirrorRotatable = mirrorRotatableCheck.checked;
@@ -218,9 +232,13 @@ mirrorDoubleSidedCheck.addEventListener('change', () => {
   mirrorDoubleSided = mirrorDoubleSidedCheck.checked;
 });
 
-mirrorFilterEnabledCheck.addEventListener('change', () => {
-  mirrorFilterEnabled = mirrorFilterEnabledCheck.checked;
-  mirrorFilterColorPicker.style.display = mirrorFilterEnabled ? 'flex' : 'none';
+// ミラーの色フィルターは、選んでいる色が白(7)かどうかで自動的に有効/無効を判定する
+// （チェックボックスは廃止。白＝通常ミラー、白以外＝色フィルター付きミラー）
+function isMirrorFilterActive(bits){ return bits !== 7; }
+
+mirrorAngleOnlyModeCheck.addEventListener('change', () => {
+  mirrorAngleOnlyMode = mirrorAngleOnlyModeCheck.checked;
+  mirrorAngleOnlyHint.style.display = mirrorAngleOnlyMode ? 'inline' : 'none';
 });
 
 let dragSetupDone = false;
@@ -497,10 +515,15 @@ function onEditorCellClick(x,y){
   if (currentTool==='mirror'){
     withHistory(() => {
       if (elHere && elHere.kind==='mirror'){
-        elHere.rotatable = mirrorRotatable;
-        elHere.doubleSided = mirrorDoubleSided;
-        elHere.filterColor = mirrorFilterEnabled ? mirrorFilterColor : null;
-        elHere.orient = mirrorOrient;
+        if (mirrorAngleOnlyMode){
+          // 角度だけ変更モード：色フィルター・回転可否・両面反射は既存の設定を維持し、向きだけ更新する
+          elHere.orient = mirrorOrient;
+        } else {
+          elHere.rotatable = mirrorRotatable;
+          elHere.doubleSided = mirrorDoubleSided;
+          elHere.filterColor = isMirrorFilterActive(mirrorFilterColor) ? mirrorFilterColor : null;
+          elHere.orient = mirrorOrient;
+        }
       } else {
         clearCellInDraft(x,y);
         draft.elements.push({
@@ -510,7 +533,7 @@ function onEditorCellClick(x,y){
           orient: mirrorOrient,
           rotatable: mirrorRotatable,
           doubleSided: mirrorDoubleSided,
-          filterColor: mirrorFilterEnabled ? mirrorFilterColor : null
+          filterColor: isMirrorFilterActive(mirrorFilterColor) ? mirrorFilterColor : null
         });
       }
     });

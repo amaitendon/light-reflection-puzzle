@@ -55,35 +55,37 @@
         <button id="selClearBtn" class="btn">選択解除</button>
         <span class="toolbar-label" id="selHint" style="margin-left:6px;"></span>
       </div>
-      <div class="toolbar-row" id="dirRow" style="display:none;">
-        <span class="toolbar-label">光の向き</span>
-        <div class="dir-picker">
-          <button data-dir="up">↑</button>
-          <button data-dir="left">←</button>
-          <button data-dir="right">→</button>
-          <button data-dir="down">↓</button>
-        </div>
-      </div>
       <div class="toolbar-row" id="colorRow" style="display:none;">
         <span class="toolbar-label">色</span>
         <div class="color-picker" id="colorPicker"></div>
       </div>
       <div class="toolbar-row" id="sourceSettingsRow" style="display:none;">
-        <span class="toolbar-label">光源設定</span>
         <div class="source-settings">
+          <span class="toolbar-label" style="min-width:auto;">向き</span>
+          <div class="dir-picker" id="sourceDirPicker">
+            <button data-dir="up">↑</button>
+            <button data-dir="left">←</button>
+            <button data-dir="right">→</button>
+            <button data-dir="down">↓</button>
+          </div>
           <label class="toggle-label">
             <input type="checkbox" id="sourceRotatable">
             <span>回転可能</span>
           </label>
+          <span class="toolbar-label" style="min-width:auto;">色</span>
+          <div class="color-picker" id="sourceColorPicker"></div>
         </div>
       </div>
       <div class="toolbar-row" id="mirrorSettingsRow" style="display:none;">
-        <span class="toolbar-label">ミラー設定</span>
         <div class="mirror-settings">
           <div class="mirror-orient-block">
             <span class="toolbar-label">向き</span>
             <div class="dir-picker mirror-orient-picker" id="mirrorOrientPicker"></div>
           </div>
+          <label class="toggle-label">
+            <input type="checkbox" id="mirrorAngleOnlyMode">
+            <span>角度だけ編集モード</span>
+          </label>
           <label class="toggle-label">
             <input type="checkbox" id="mirrorRotatable" checked>
             <span>回転可能</span>
@@ -92,11 +94,9 @@
             <input type="checkbox" id="mirrorDoubleSided" checked>
             <span>両面反射</span>
           </label>
-          <label class="toggle-label">
-            <input type="checkbox" id="mirrorFilterEnabled">
-            <span>色フィルター</span>
-          </label>
-          <div class="color-picker" id="mirrorFilterColorPicker" style="display:none;"></div>
+          <div class="mirror-orient-block">
+            <div class="color-picker" id="mirrorFilterColorPicker"></div>
+          </div>
         </div>
       </div>
       <div class="toolbar-row" id="converterSettingsRow" style="display:none;">
