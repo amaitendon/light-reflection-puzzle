@@ -5,6 +5,25 @@ let draft = { size:8, walls:[], elements:[], sources:[], goals:[] };
 let seq = 0;
 function nextId(){ return 'e'+(seq++); }
 
+// 外部から読み込んだステージ（インポート等）が持つ既存IDと、
+// これから nextId() で発行するIDが衝突しないよう、seq を安全な値まで進める。
+// これを怠ると、読み込み後にコピー＆ペーストした要素が既存要素と同じIDを持ってしまい、
+// プレイ中に片方のミラーを回転させるともう片方も連動して回転する、というバグが発生する。
+function syncSeqWithDraft(d){
+  let maxNum = -1;
+  const scan = (arr) => {
+    if (!Array.isArray(arr)) return;
+    arr.forEach(item => {
+      const m = /^e(\d+)$/.exec(item && item.id);
+      if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
+    });
+  };
+  scan(d.elements);
+  scan(d.sources);
+  scan(d.goals);
+  if (maxNum + 1 > seq) seq = maxNum + 1;
+}
+
 let currentTool = 'wall';
 let currentDir = 'right';
 let currentColor = 7;
@@ -814,6 +833,7 @@ function applyStagePayload(payload){
     sources: payload.level.sources.map(s=>Object.assign({}, s)),
     goals: payload.level.goals.map(g=>Object.assign({}, g)),
   };
+  syncSeqWithDraft(draft);
   const name = payload.name || payload.title || '';
   $('#nameInput').value = name;
   if (payload.description !== undefined) $('#officialDesc').value = payload.description || '';
