@@ -12,7 +12,7 @@
 */
 
 const SOLVER_SOURCE_DIRS = ['right', 'down', 'left', 'up'];
-const SOLVER_BRUTE_FORCE_LIMIT = 300000; // これ以下の組み合わせ数なら全探索する
+const SOLVER_BRUTE_FORCE_LIMIT = 10000000; // これ以下の組み合わせ数なら全探索する
 const SOLVER_DEFAULT_TIME_LIMIT_MS = 4500;
 
 function collectSolverVariables(level) {

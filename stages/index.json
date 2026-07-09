@@ -142,8 +142,34 @@
     },
     {
       "id": "stage-001",
+      "file": "stages/02-09-仲良し三兄弟.json",
+      "title": "02-09-仲良し三兄弟",
+      "difficulty": 2,
+      "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/02-10-仲良し三兄弟2.json",
+      "title": "02-10-仲良し三兄弟2",
+      "difficulty": 3,
+      "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
       "file": "stages/03-01-色変換パネルの使い方1-変換.json",
       "title": "03-01-色変換パネルの使い方1-変換",
+      "difficulty": 1,
+      "tags": [
+        "色"
+      ],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/03-02-変換2.json",
+      "title": "03-02-変換2",
       "difficulty": 2,
       "tags": [
         "色"
@@ -152,8 +178,18 @@
     },
     {
       "id": "stage-001",
-      "file": "stages/03-02-色変換パネルの使い方2-増殖.json",
-      "title": "03-02-色変換パネルの使い方2-増殖",
+      "file": "stages/03-03-色変換パネルの使い方2-増殖.json",
+      "title": "03-03-色変換パネルの使い方2-増殖",
+      "difficulty": 1,
+      "tags": [
+        "色"
+      ],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/03-04-増殖2.json",
+      "title": "03-04-増殖2",
       "difficulty": 2,
       "tags": [
         "色"
@@ -162,9 +198,9 @@
     },
     {
       "id": "stage-001",
-      "file": "stages/03-03-誰かにとっての邪魔者も.json",
-      "title": "03-03-誰かにとっての邪魔者も",
-      "difficulty": 2,
+      "file": "stages/03-05-よーいどん.json",
+      "title": "03-05-よーいどん",
+      "difficulty": 1,
       "tags": [
         "色"
       ],
@@ -172,10 +208,30 @@
     },
     {
       "id": "stage-001",
-      "file": "stages/03-04-すれ違い.json",
-      "title": "03-04-すれ違い",
+      "file": "stages/03-06-巡礼.json",
+      "title": "03-06-巡礼",
+      "difficulty": 1,
+      "tags": [
+        "色"
+      ],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/03-07-すれ違い.json",
+      "title": "03-07-すれ違い",
       "difficulty": 1,
       "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/03-08-誰かにとっての邪魔者も.json",
+      "title": "03-08-誰かにとっての邪魔者も",
+      "difficulty": 2,
+      "tags": [
+        "色"
+      ],
       "description": ""
     },
     {
@@ -191,6 +247,30 @@
       "file": "stages/51-02-卍格子回路コンパクト.json",
       "title": "51-02-卍格子回路コンパクト",
       "difficulty": 1,
+      "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/51-03-逆流検出回路.json",
+      "title": "51-03-逆流検出回路",
+      "difficulty": 3,
+      "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/51-04-逆流検出回路-卍格子回路入力.json",
+      "title": "51-04-逆流検出回路-卍格子回路入力",
+      "difficulty": 3,
+      "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/51-05-どれだけ増やせる？.json",
+      "title": "51-05-どれだけ増やせる？",
+      "difficulty": 3,
       "tags": [],
       "description": ""
     }

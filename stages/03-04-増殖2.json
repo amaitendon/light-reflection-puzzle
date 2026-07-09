@@ -2,13 +2,13 @@
   "format": "official-stage",
   "version": 1,
   "id": "stage-001",
-  "title": "03-02-色変換パネルの使い方2-増殖",
+  "title": "03-04-増殖2",
   "description": "",
   "difficulty": 2,
   "tags": [
     "色"
   ],
-  "name": "03-02-色変換パネルの使い方2-増殖",
+  "name": "03-04-増殖2",
   "level": {
     "size": 6,
     "walls": [],

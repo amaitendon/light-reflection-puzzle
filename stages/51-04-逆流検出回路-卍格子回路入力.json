@@ -1,0 +1,823 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "51-04-逆流検出回路-卍格子回路入力",
+  "description": "",
+  "difficulty": 3,
+  "tags": [],
+  "name": "51-04-逆流検出回路-卍格子回路入力",
+  "level": {
+    "size": 13,
+    "walls": [
+      [
+        0,
+        6
+      ],
+      [
+        8,
+        6
+      ],
+      [
+        9,
+        6
+      ],
+      [
+        11,
+        6
+      ],
+      [
+        12,
+        6
+      ],
+      [
+        10,
+        6
+      ]
+    ],
+    "elements": [
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e3128",
+        "x": 9,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e3129",
+        "x": 9,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e3130",
+        "x": 11,
+        "y": 4
+      },
+      {
+        "kind": "converter",
+        "color": 7,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e3131",
+        "x": 10,
+        "y": 3
+      },
+      {
+        "kind": "converter",
+        "color": 7,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e3132",
+        "x": 10,
+        "y": 4
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e3133",
+        "x": 11,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e3134",
+        "x": 9,
+        "y": 5
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e3135",
+        "x": 12,
+        "y": 3
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3136",
+        "x": 12,
+        "y": 1
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e3137",
+        "x": 12,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e3138",
+        "x": 9,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e3139",
+        "x": 8,
+        "y": 0
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e3175",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null,
+        "id": "e3178",
+        "x": 3,
+        "y": 2
+      },
+      {
+        "id": "e3182",
+        "kind": "mirror",
+        "x": 3,
+        "y": 1,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2
+      },
+      {
+        "id": "e3183",
+        "kind": "mirror",
+        "x": 3,
+        "y": 0,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4
+      },
+      {
+        "kind": "converter",
+        "color": 1,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e3185",
+        "x": 2,
+        "y": 1
+      },
+      {
+        "id": "e3187",
+        "kind": "mirror",
+        "x": 0,
+        "y": 1,
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e3330",
+        "x": 1,
+        "y": 7
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e3331",
+        "x": 1,
+        "y": 8
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e3332",
+        "x": 1,
+        "y": 9
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e3333",
+        "x": 1,
+        "y": 10
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3338",
+        "x": 1,
+        "y": 11
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3339",
+        "x": 1,
+        "y": 12
+      },
+      {
+        "kind": "converter",
+        "color": 6,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e3352",
+        "x": 10,
+        "y": 7
+      },
+      {
+        "kind": "converter",
+        "color": 6,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e3353",
+        "x": 10,
+        "y": 8
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e3354",
+        "x": 8,
+        "y": 7
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e3355",
+        "x": 8,
+        "y": 8
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e3356",
+        "x": 9,
+        "y": 8
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e3357",
+        "x": 9,
+        "y": 7
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e3358",
+        "x": 11,
+        "y": 7
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2,
+        "id": "e3359",
+        "x": 11,
+        "y": 8
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e3360",
+        "x": 9,
+        "y": 10
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e3361",
+        "x": 11,
+        "y": 10
+      },
+      {
+        "kind": "converter",
+        "color": 5,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e3362",
+        "x": 10,
+        "y": 9
+      },
+      {
+        "kind": "converter",
+        "color": 5,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true,
+        "id": "e3363",
+        "x": 10,
+        "y": 10
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e3364",
+        "x": 9,
+        "y": 9
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e3365",
+        "x": 11,
+        "y": 9
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e3366",
+        "x": 8,
+        "y": 10
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4,
+        "id": "e3367",
+        "x": 8,
+        "y": 9
+      },
+      {
+        "kind": "converter",
+        "color": 3,
+        "id": "e3372",
+        "x": 10,
+        "y": 11
+      },
+      {
+        "kind": "converter",
+        "color": 3,
+        "id": "e3373",
+        "x": 10,
+        "y": 12
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3374",
+        "x": 9,
+        "y": 11
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3375",
+        "x": 9,
+        "y": 12
+      },
+      {
+        "kind": "mirror",
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3376",
+        "x": 11,
+        "y": 11
+      },
+      {
+        "kind": "mirror",
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3377",
+        "x": 11,
+        "y": 12
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3378",
+        "x": 8,
+        "y": 12
+      },
+      {
+        "kind": "mirror",
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3379",
+        "x": 8,
+        "y": 11
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e3391",
+        "x": 7,
+        "y": 7
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3,
+        "id": "e3392",
+        "x": 2,
+        "y": 8
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e3393",
+        "x": 6,
+        "y": 9
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 6,
+        "id": "e3394",
+        "x": 3,
+        "y": 10
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e3395",
+        "x": 4,
+        "y": 12
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 5,
+        "id": "e3396",
+        "x": 5,
+        "y": 11
+      },
+      {
+        "id": "e3403",
+        "kind": "mirror",
+        "x": 7,
+        "y": 5,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3404",
+        "kind": "mirror",
+        "x": 6,
+        "y": 5,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3405",
+        "kind": "mirror",
+        "x": 5,
+        "y": 3,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3406",
+        "kind": "mirror",
+        "x": 3,
+        "y": 3,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3407",
+        "kind": "mirror",
+        "x": 2,
+        "y": 4,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3408",
+        "kind": "mirror",
+        "x": 4,
+        "y": 4,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3409",
+        "kind": "mirror",
+        "x": 1,
+        "y": 4,
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3411",
+        "kind": "mirror",
+        "x": 0,
+        "y": 3,
+        "orient": 135,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3412",
+        "kind": "mirror",
+        "x": 0,
+        "y": 5,
+        "orient": 45,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "kind": "mirror",
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1,
+        "id": "e3430",
+        "x": 2,
+        "y": 10
+      },
+      {
+        "id": "e3433",
+        "kind": "mirror",
+        "x": 6,
+        "y": 12,
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2
+      },
+      {
+        "id": "e3434",
+        "kind": "mirror",
+        "x": 3,
+        "y": 7,
+        "orient": 90,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4
+      }
+    ],
+    "sources": [
+      {
+        "dir": "down",
+        "color": 7,
+        "rotatable": false,
+        "id": "e3148",
+        "x": 11,
+        "y": 2
+      },
+      {
+        "dir": "down",
+        "color": 7,
+        "rotatable": false,
+        "id": "e3180",
+        "x": 1,
+        "y": 1
+      }
+    ],
+    "goals": [
+      {
+        "color": 4,
+        "id": "e3151",
+        "x": 9,
+        "y": 2
+      },
+      {
+        "color": 2,
+        "id": "e3152",
+        "x": 8,
+        "y": 4
+      },
+      {
+        "color": 1,
+        "id": "e3153",
+        "x": 11,
+        "y": 1
+      },
+      {
+        "color": 1,
+        "id": "e3181",
+        "x": 0,
+        "y": 2
+      },
+      {
+        "id": "e3186",
+        "x": 1,
+        "y": 0,
+        "color": 4
+      },
+      {
+        "color": 4,
+        "id": "e3334",
+        "x": 0,
+        "y": 7
+      },
+      {
+        "color": 4,
+        "id": "e3335",
+        "x": 0,
+        "y": 8
+      },
+      {
+        "color": 1,
+        "id": "e3336",
+        "x": 0,
+        "y": 9
+      },
+      {
+        "color": 1,
+        "id": "e3337",
+        "x": 0,
+        "y": 10
+      },
+      {
+        "color": 2,
+        "id": "e3340",
+        "x": 0,
+        "y": 11
+      },
+      {
+        "color": 2,
+        "id": "e3341",
+        "x": 0,
+        "y": 12
+      },
+      {
+        "color": 4,
+        "id": "e3368",
+        "x": 12,
+        "y": 7
+      },
+      {
+        "color": 4,
+        "id": "e3369",
+        "x": 12,
+        "y": 8
+      },
+      {
+        "color": 1,
+        "id": "e3370",
+        "x": 12,
+        "y": 9
+      },
+      {
+        "color": 1,
+        "id": "e3371",
+        "x": 12,
+        "y": 10
+      },
+      {
+        "color": 2,
+        "id": "e3380",
+        "x": 12,
+        "y": 11
+      },
+      {
+        "color": 2,
+        "id": "e3381",
+        "x": 12,
+        "y": 12
+      },
+      {
+        "id": "e3420",
+        "x": 0,
+        "y": 4,
+        "color": 7
+      }
+    ]
+  }
+}

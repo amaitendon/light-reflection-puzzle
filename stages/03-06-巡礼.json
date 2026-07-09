@@ -1,0 +1,136 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "03-06-巡礼",
+  "description": "",
+  "difficulty": 1,
+  "tags": [
+    "色"
+  ],
+  "name": "03-06-巡礼",
+  "level": {
+    "size": 5,
+    "walls": [],
+    "elements": [
+      {
+        "id": "e3560",
+        "kind": "converter",
+        "x": 2,
+        "y": 3,
+        "color": 1,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true
+      },
+      {
+        "id": "e3561",
+        "kind": "mirror",
+        "x": 2,
+        "y": 0,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3562",
+        "kind": "mirror",
+        "x": 2,
+        "y": 2,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 3
+      },
+      {
+        "id": "e3563",
+        "kind": "mirror",
+        "x": 2,
+        "y": 4,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3564",
+        "kind": "mirror",
+        "x": 0,
+        "y": 2,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3573",
+        "kind": "converter",
+        "x": 0,
+        "y": 3,
+        "color": 4,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true
+      },
+      {
+        "id": "e3575",
+        "kind": "mirror",
+        "x": 0,
+        "y": 4,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4
+      },
+      {
+        "id": "e3578",
+        "kind": "mirror",
+        "x": 4,
+        "y": 0,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 2
+      },
+      {
+        "id": "e3579",
+        "kind": "converter",
+        "x": 4,
+        "y": 1,
+        "color": 2,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true
+      },
+      {
+        "id": "e3581",
+        "kind": "mirror",
+        "x": 4,
+        "y": 2,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 4
+      }
+    ],
+    "sources": [
+      {
+        "id": "e3576",
+        "x": 0,
+        "y": 0,
+        "dir": "right",
+        "color": 4,
+        "rotatable": false
+      }
+    ],
+    "goals": [
+      {
+        "id": "e3583",
+        "x": 4,
+        "y": 4,
+        "color": 2
+      }
+    ]
+  }
+}

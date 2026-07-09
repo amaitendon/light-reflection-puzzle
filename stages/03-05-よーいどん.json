@@ -1,0 +1,140 @@
+{
+  "format": "official-stage",
+  "version": 1,
+  "id": "stage-001",
+  "title": "03-05-よーいどん",
+  "description": "",
+  "difficulty": 1,
+  "tags": [
+    "色"
+  ],
+  "name": "03-05-よーいどん",
+  "level": {
+    "size": 5,
+    "walls": [],
+    "elements": [
+      {
+        "id": "e3608",
+        "kind": "mirror",
+        "x": 1,
+        "y": 0,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3609",
+        "kind": "mirror",
+        "x": 2,
+        "y": 1,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3614",
+        "kind": "mirror",
+        "x": 1,
+        "y": 1,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1
+      },
+      {
+        "id": "e3615",
+        "kind": "mirror",
+        "x": 2,
+        "y": 0,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": 1
+      },
+      {
+        "id": "e3617",
+        "kind": "converter",
+        "x": 3,
+        "y": 0,
+        "color": 1,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true
+      },
+      {
+        "id": "e3618",
+        "kind": "converter",
+        "x": 3,
+        "y": 1,
+        "color": 1,
+        "interactive": false,
+        "type": "replace",
+        "enabled": true
+      },
+      {
+        "id": "e3619",
+        "kind": "mirror",
+        "x": 4,
+        "y": 0,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3620",
+        "kind": "mirror",
+        "x": 4,
+        "y": 1,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      },
+      {
+        "id": "e3626",
+        "kind": "mirror",
+        "x": 4,
+        "y": 4,
+        "orient": 0,
+        "rotatable": true,
+        "doubleSided": true,
+        "filterColor": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "e3606",
+        "x": 0,
+        "y": 0,
+        "dir": "right",
+        "color": 2,
+        "rotatable": false
+      },
+      {
+        "id": "e3625",
+        "x": 0,
+        "y": 1,
+        "dir": "right",
+        "color": 4,
+        "rotatable": false
+      }
+    ],
+    "goals": [
+      {
+        "id": "e3621",
+        "x": 1,
+        "y": 4,
+        "color": 1
+      },
+      {
+        "id": "e3622",
+        "x": 2,
+        "y": 4,
+        "color": 1
+      }
+    ]
+  }
+}
