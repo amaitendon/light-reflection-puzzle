@@ -1,19 +1,34 @@
-/* ================= solver =================
+/* ================= solver v2 =================
    ステージ内の「動かせる要素」（回転できるミラー／回転できる光源／
    ON-OFF切り替えできる色変換パネル）の組み合わせを探索し、
    全ゴールを一致させる状態を見つける。
 
    - 組み合わせ数が少ないステージ  → 全探索（DFS）で確実に解を発見
-   - 組み合わせ数が多いステージ    → min-conflicts に近い山登り法＋ランダム再スタートで探索
-   - 色フィルターミラー（RYM/GYC/BCM）が絡む密結合ステージ
-                                   → 下記の「色チャンネル分解探索」を追加で試す
-                                     （色変換パネルなどでこの前提が崩れているステージでは、
-                                      ごく短時間で「使えない」と判断して通常探索に時間を譲る）
+   - 組み合わせ数が多いステージ    → 光線追跡バックトラッキング探索
+                                     （遭遇したミラーだけを分岐する。迷路系ステージに強い）
+                                   → それでも解けなければ min-conflicts に近い
+                                     山登り法＋ランダム再スタートで探索
+   - options.mode で戦略を明示指定することも可能（既定は 'auto'）
+
+   1. 山登り法の評価関数は「未達成ゴールへの最短距離」を主な副次指標にし、
+      総距離指標はごく小さい重みの補助勾配として利用する。（囮ルートでの探索時間を浪費対策）
+   2. [新機能] options.mode で探索モードを明示指定可能に（'auto' / 'backtrack' / 'local' / 'brute'）。
+      ステージの性質によって得意な戦略が異なるため（例：迷路系は backtrack、色変換パネルが
+      密結合したステージは local が安定することがある）、エディター側でステージ作成者が
+      使い分けたり、比較検証したりできるようにした。
+
+   コメントルール
+   ・過去の変更履歴やバグ修正は記載しないこと
+   （例えばバグ修正履歴は未来の変更に対し、有益な情報を与えないため記載しない）
+   ・現在のプログラムの状態が正であり、プログラムからは読み取れない内容（設計意図など）のみをコメントして良い。
+   （例えば、アルゴリズムの採用理由や、他の戦略の非採用理由などは記載して良い）
+   ・重複する内容は記載しないこと（プログラムと同じ内容をコメントで記載しない、同じ内容の言い換えコメントも不要）
+   ・変更により不要になったコメントは随時削除すること
 */
 
 const SOLVER_SOURCE_DIRS = ['right', 'down', 'left', 'up'];
-const SOLVER_BRUTE_FORCE_LIMIT = 10000000; // これ以下の組み合わせ数なら全探索する
-const SOLVER_DEFAULT_TIME_LIMIT_MS = 4500;
+const SOLVER_BRUTE_FORCE_LIMIT = 2000000; // これ以下の組み合わせ数なら全探索する
+const SOLVER_DEFAULT_TIME_LIMIT_MS = 5000;
 
 function collectSolverVariables(level) {
   const mirrorVars = [];
@@ -34,18 +49,47 @@ function popcount3(n) {
 }
 
 // 実際に届いた色と目標色の差（ビットのずれの数の合計）を「惜しさ」として返す。0なら完全一致。
-// 色のズレが最優先の指標だが、副次的に光線が実際に進んだ距離の合計を加点し、
-// 山登り法が勾配を掴めるようにしている。
+//
+// [修正] 旧版は副次指標として「光線が実際に進んだ距離の合計（totalSteps）」を使っていたが、
+// これは「ゴールに向かっているか」ではなく「どれだけ長く彷徨ったか」しか測っておらず、
+// ゴールに全く関係ない方向へ長く迷い込む“おとり経路（デコイ）”のほうが、ゴール手前まで
+// 正しく進んだ短い経路よりスコアが良くなってしまう欠陥があった（山登り法がデコイに
+// 引き寄せられて抜け出せなくなる典型的な「欺瞞的局所解」の原因）。
+// 新版では「未達成の各ゴールについて、光線上のどこかの点からそのゴールまでの最短距離」を
+// 副次指標にする。これなら「進んだ距離」ではなく「ゴールにどれだけ近づけたか」を直接測るため、
+// ゴールから離れる方向に長く伸びるデコイは正しく悪いスコアになる。
+function nearestGoalDistance(segments, gx, gy) {
+  let best = Infinity;
+  for (const seg of segments) {
+    for (const [px, py] of seg.pts) {
+      const d = Math.abs(px - gx) + Math.abs(py - gy); // マンハッタン距離
+      if (d < best) best = d;
+    }
+  }
+  return best === Infinity ? 0 : best;
+}
+
 function evaluateLevel(level, state) {
   const result = traceAll(level, state.mirrorStates, state.converterStates, state.sourceStates);
   let colorPenalty = 0;
+  let distancePenalty = 0;
   result.goalStates.forEach(({ g }) => {
     const actual = result.goalHits[g.x + ',' + g.y] || 0;
-    colorPenalty += popcount3((g.color ^ actual) & 7);
+    const mismatch = popcount3((g.color ^ actual) & 7);
+    colorPenalty += mismatch;
+    if (mismatch > 0) {
+      distancePenalty += nearestGoalDistance(result.segments, g.x, g.y);
+    }
   });
   let totalSteps = 0;
   result.segments.forEach(seg => { totalSteps += seg.pts.length - 1; });
-  const penalty = colorPenalty * 1000 - totalSteps;
+  // colorPenalty（達成ビット数）が最優先、distancePenalty（未達成ゴールへの近さ）はその
+  // タイブレーク。totalSteps は旧版の主指標だったもので、ステージによっては（分岐が多く
+  // distancePenaltyだけでは方向が定まりにくい場合など）依然として有用な補助勾配になるため、
+  // ごく小さい重みで残す。ただし重みを十分小さくしてあるので、デコイ経路のように
+  // ゴールに無関係へ長く伸びるだけの経路が、正しい経路より有利になることはもう無い
+  // （distancePenalty 1マス分の差 ≒ totalSteps 100マス分の差に相当する重み付け）。
+  const penalty = colorPenalty * 1000 + distancePenalty - totalSteps * 0.01;
   return { penalty, allGoalsMet: result.allGoalsMet };
 }
 
@@ -188,28 +232,8 @@ function searchAssignment(ctx) {
   return { solved: false, state: best ? cloneState(best) : cloneState(state), penalty: bestPenalty };
 }
 
-/* ================= 色チャンネル分解探索（R探索/R固定 → G探索/G固定 → B探索/B固定）=================
+/* ================= 色チャンネル分解探索（R探索/R固定 → G探索/G固定 → B探索/B固定）================= */
 
-   色問題（RYM/GYC/BCM のような色フィルターミラー）が絡むステージは、変数（ミラー）の数こそ多いが、
-   実は「Rビットの光の経路に影響するのは、フィルター無しの全反射ミラーと、フィルターにRを含む
-   ミラー（R自身・Y・M）だけ」という構造を持つ。G・Bだけに関係するミラーはRの光をただ素通りさせる
-   だけなので、Rを解くという目的においては「どんな向きでもよい変数＝実質存在しない変数」になる。
-
-   さらに「単色（1ビットだけ）のビームは分裂しない」という性質を利用し、実際にその色のビームが
-   当たった未確定ミラーでだけ分岐するバックトラッキングを行う（関係のないミラー・まだビームが
-   到達していないミラーは一切分岐に数えない）。
-
-   R→G→Bの3チャンネルを1本の再帰として連結してあるため、Bで手詰まりになったら自動的にGの
-   「次の候補」に戻り、Gも尽きたらRの「次の候補」に戻る、という本来のCSPバックトラッキングと
-   同じ動きになる（単純に毎回最初からやり直すよりはるかに効率が良い）。
-
-   色変換パネル（converter）が「入ってきた色に関係なく固定の色に変換する」場合、
-   例えば本来Gを持たない光からGを新しく作り出すことがあり、この前提（Rだけ・Gだけを追えばよい）
-   が崩れることがある。このモジュールは常に本物のビーム追跡（evaluateLevel）で最終検算するため、
-   前提が崩れていても「間違った成功」を報告することはない。前提が崩れて本当に解けない場合は、
-   ごく短時間で「このモデルでは解なし」と判定して抜けるので、その分の時間は通常のローカルサーチに
-   回される（solveLevel 側で実施）。
-*/
 const CHANNEL_BIT = { R: 1, G: 2, B: 4 };
 
 function backtrackSolveAllChannels(baseCtx, order, timeLimitMs, alwaysShuffle) {
@@ -327,6 +351,9 @@ function backtrackSolveAllChannels(baseCtx, order, timeLimitMs, alwaysShuffle) {
         return cont();
       }
       const s = level.sources[idx];
+      if ((s.color & bit) === 0) {
+        return processSource(bit, idx + 1, goalHits, cont);
+      }
       let dir = s.dir;
       if (s.rotatable) {
         const known = knownOrNull(s.id);
@@ -393,11 +420,22 @@ function backtrackSolveAllChannels(baseCtx, order, timeLimitMs, alwaysShuffle) {
  * @param {object} level - beam-engine が扱う level オブジェクト（size, walls, elements, sources, goals）
  * @param {object} [options]
  * @param {number} [options.timeLimitMs] - 探索にかける時間の上限（ミリ秒）
- * @returns {{solved:boolean, mirrorStates:object, converterStates:object, sourceStates:object, penalty:number}}
+ * @param {'auto'|'backtrack'|'local'|'brute'} [options.mode] - 探索モード（既定 'auto'）。
+ *   - 'auto'      : 下の3戦略を状況に応じて順に試す。基本的にはこれを使えばよい。
+ *   - 'backtrack' : 光線追跡バックトラッキング探索のみを使う。壁やミラーで経路がほぼ
+ *                   一本道に絞られる「迷路系」ステージ（おとり経路があるものを含む）に強い。
+ *                   色フィルターミラーの有無は問わない。
+ *   - 'local'     : min-conflicts風の山登り法のみを使う。色変換パネルが密結合していて
+ *                   バックトラッキングの前提（チャンネルごとの独立性）が崩れているステージ
+ *                   （変換パネルが多いステージ等）に強い。
+ *   - 'brute'     : 組み合わせ数の上限を無視して全探索する（デバッグ・小規模ステージ検証用。
+ *                   変数が多いステージでは時間切れになりうる）。
+ * @returns {{solved:boolean, mirrorStates:object, converterStates:object, sourceStates:object, penalty:number, strategyUsed:string}}
  */
 function solveLevel(level, options) {
   options = options || {};
   const totalTimeLimitMs = options.timeLimitMs || SOLVER_DEFAULT_TIME_LIMIT_MS;
+  const mode = options.mode || 'auto';
   const start = Date.now();
   const overallDeadline = start + totalTimeLimitMs;
 
@@ -436,17 +474,14 @@ function solveLevel(level, options) {
   if (allVarIds.length === 0) {
     const state = { mirrorStates: {}, converterStates: {}, sourceStates: {} };
     const { penalty, allGoalsMet } = evaluateLevel(level, state);
-    return Object.assign({ solved: allGoalsMet, penalty }, state);
+    return Object.assign({ solved: allGoalsMet, penalty, strategyUsed: 'trivial' }, state);
   }
 
   const baseCtx = { level, varKind, domains, setVar, getVar, allVarIds };
-
-  // 色フィルターミラー（R/G/B単色やY/M/Cの複合色など、filterColorがnullでも7でもないもの）が
-  // 存在する場合だけ、色チャンネル分解探索を試す価値がある
-  const hasColorSplitMirror = mirrorVars.some(id => {
-    const fc = elementById[id].filterColor;
-    return fc != null && (fc & 7) !== 7 && fc !== 0;
-  });
+  const evalFn = s => {
+    const r = evaluateLevel(level, s);
+    return { penalty: r.penalty, solved: r.allGoalsMet };
+  };
 
   let overallBest = null;
   let overallBestPenalty = Infinity;
@@ -457,70 +492,89 @@ function solveLevel(level, options) {
     return false;
   }
 
-  // ---- 戦略1：通常の全変数探索（従来通り。組み合わせ数が少ないステージはこれで一発）----
-  const genericTimeShare = hasColorSplitMirror
-    ? Math.min(Math.floor(totalTimeLimitMs * 0.2), 1000)
-    : totalTimeLimitMs;
+  const CHANNEL_ORDERS = [
+    ['R', 'G', 'B'], ['G', 'B', 'R'], ['B', 'R', 'G'],
+    ['R', 'B', 'G'], ['G', 'R', 'B'], ['B', 'G', 'R'],
+  ];
+  // 光線追跡バックトラッキング探索
+  function runBacktrackPhase(deadline) {
+    for (const order of CHANNEL_ORDERS) {
+      if (Date.now() >= deadline) break;
+      const remaining = deadline - Date.now();
+      const share = Math.max(150, Math.floor(remaining / (CHANNEL_ORDERS.length - CHANNEL_ORDERS.indexOf(order))));
+      const res = backtrackSolveAllChannels(baseCtx, order, share, false);
+      if (res.solved) return res;
+      // exhausted（このモデルでは解なし）の場合は他の順序を試しても無駄なので、
+      // 残り時間をすぐ他の戦略に譲る
+      if (res.exhausted && order === CHANNEL_ORDERS[0]) break;
+    }
+    return null;
+  }
+
+  if (mode === 'brute') {
+    const res = searchAssignment({
+      domains, setVar, getVar, freeVarIds: allVarIds, state: freshState(),
+      evaluate: evalFn, timeLimitMs: totalTimeLimitMs, bruteForceLimit: Infinity,
+    });
+    if (considerResult(res)) return Object.assign({ solved: true, penalty: 0, strategyUsed: 'brute' }, res.state);
+    return Object.assign({ solved: false, penalty: overallBestPenalty, strategyUsed: 'brute' }, overallBest || freshState());
+  }
+
+  if (mode === 'local') {
+    const res = searchAssignment({
+      domains, setVar, getVar, freeVarIds: allVarIds, state: freshState(),
+      evaluate: evalFn, timeLimitMs: totalTimeLimitMs, bruteForceLimit: SOLVER_BRUTE_FORCE_LIMIT,
+    });
+    if (considerResult(res)) return Object.assign({ solved: true, penalty: 0, strategyUsed: 'local' }, res.state);
+    return Object.assign({ solved: false, penalty: overallBestPenalty, strategyUsed: 'local' }, overallBest || freshState());
+  }
+
+  if (mode === 'backtrack') {
+    const res = runBacktrackPhase(overallDeadline);
+    if (res) return Object.assign({ solved: true, penalty: 0, strategyUsed: 'backtrack' }, res.state);
+    return Object.assign({ solved: false, penalty: Infinity, strategyUsed: 'backtrack' }, freshState());
+  }
+
+  // ---- mode: 'auto'（既定）----
+
+  // 戦略1：軽い全変数探索をごく短時間だけ試す（変数が少ないステージはこれだけで一発）
+  const quickShare = Math.min(Math.floor(totalTimeLimitMs * 0.2), 1000);
   const genericRes = searchAssignment({
     domains, setVar, getVar,
     freeVarIds: allVarIds,
     state: freshState(),
-    evaluate: s => {
-      const r = evaluateLevel(level, s);
-      return { penalty: r.penalty, solved: r.allGoalsMet };
-    },
-    timeLimitMs: Math.max(200, Math.min(genericTimeShare, overallDeadline - Date.now())),
+    evaluate: evalFn,
+    timeLimitMs: Math.max(200, Math.min(quickShare, overallDeadline - Date.now())),
     bruteForceLimit: SOLVER_BRUTE_FORCE_LIMIT,
   });
   if (considerResult(genericRes)) {
-    return Object.assign({ solved: true, penalty: 0 }, genericRes.state);
+    return Object.assign({ solved: true, penalty: 0, strategyUsed: 'generic' }, genericRes.state);
   }
 
-  // ---- 戦略2：色チャンネル分解探索（R→G→B のように1色ずつ確定させ、変数を段階的に絞り込む）----
-  if (hasColorSplitMirror && Date.now() < overallDeadline) {
-    const channelOrders = [
-      ['R', 'G', 'B'], ['G', 'B', 'R'], ['B', 'R', 'G'],
-      ['R', 'B', 'G'], ['G', 'R', 'B'], ['B', 'G', 'R'],
-    ];
-    // 色変換パネルなどで分解の前提が崩れているステージでは、決定的な最初の1回でほぼ即座に
-    // 「使えない」と判定できるので、多くの時間を消費しない設計になっている
-    const decompDeadline = Math.min(overallDeadline, Date.now() + Math.floor(totalTimeLimitMs * 0.5));
-    for (const order of channelOrders) {
-      if (Date.now() >= decompDeadline) break;
-      const remaining = decompDeadline - Date.now();
-      const share = Math.max(150, Math.floor(remaining / (channelOrders.length - channelOrders.indexOf(order))));
-      const res = backtrackSolveAllChannels(baseCtx, order, share, false);
-      if (res.solved) {
-        return Object.assign({ solved: true, penalty: 0 }, res.state);
-      }
-      // exhausted（このモデルでは解なし）の場合は他の順序を試しても無駄なので、
-      // 残り時間をすぐ通常探索に譲る
-      if (res.exhausted && order === channelOrders[0]) {
-        // 最初の順序ですら前提が崩れている＝色変換等でこのステージには使えないと判断し、
-        // 残りの順序は試さずに抜ける
-        break;
-      }
+  // 戦略2：光線追跡バックトラッキング探索（ステージの種類を問わず常に試す）
+  if (Date.now() < overallDeadline) {
+    const decompDeadline = Math.min(overallDeadline, Date.now() + Math.floor(totalTimeLimitMs * 0.6));
+    const res = runBacktrackPhase(decompDeadline);
+    if (res) {
+      return Object.assign({ solved: true, penalty: 0, strategyUsed: 'backtrack' }, res.state);
     }
   }
 
-  // ---- 戦略3：残り時間を通常のローカルサーチに使う（保険。戦略1の結果から再開）----
+  // 戦略3：残り時間を通常のローカルサーチに使う（保険。戦略1の結果から再開）
   if (Date.now() < overallDeadline) {
     const fallbackState = overallBest ? cloneState(overallBest) : freshState();
     const res = searchAssignment({
       domains, setVar, getVar,
       freeVarIds: allVarIds,
       state: fallbackState,
-      evaluate: s => {
-        const r = evaluateLevel(level, s);
-        return { penalty: r.penalty, solved: r.allGoalsMet };
-      },
+      evaluate: evalFn,
       timeLimitMs: overallDeadline - Date.now(),
       bruteForceLimit: 0,
     });
     if (considerResult(res)) {
-      return Object.assign({ solved: true, penalty: 0 }, res.state);
+      return Object.assign({ solved: true, penalty: 0, strategyUsed: 'local-fallback' }, res.state);
     }
   }
 
-  return Object.assign({ solved: false, penalty: overallBestPenalty }, overallBest || freshState());
+  return Object.assign({ solved: false, penalty: overallBestPenalty, strategyUsed: 'none' }, overallBest || freshState());
 }
