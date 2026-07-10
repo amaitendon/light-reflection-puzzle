@@ -3,16 +3,21 @@
    ON-OFF切り替えできる色変換パネル）の組み合わせを探索し、
    全ゴールを一致させる状態を見つける。
 
-   - 組み合わせ数が少ないステージ  → 全探索（DFS）で確実に解を発見
-   - 組み合わせ数が多いステージ    → 光線追跡バックトラッキング探索
-                                     （遭遇したミラーだけを分岐する。迷路系ステージに強い）
-                                   → それでも解けなければ min-conflicts に近い
-                                     山登り法＋ランダム再スタートで探索
+   既定の 'auto' モードは以下の順に3つの戦略を試す。
+   - 戦略1：光線追跡バックトラッキング探索
+            （遭遇したミラーだけを分岐する。迷路系ステージに強く、
+            大半のステージはこれで解ける。ベンチマークにより、他の2戦略より
+            先に試すのが最も効率的と確認済み）
+   - 戦略2：軽い全変数探索（組み合わせ数が少ない場合の確定的DFS）
+            （色変換パネルが密結合していて戦略1の前提（チャンネルごとの独立性）が
+            崩れているステージなど、戦略1が不得意なケースを短時間で拾う保険）
+   - 戦略3：min-conflicts に近い山登り法＋ランダム再スタート
+            （戦略1・2のどちらも解けなかった場合の最終手段）
    - options.mode で戦略を明示指定することも可能（既定は 'auto'）
 
    1. 山登り法の評価関数は「未達成ゴールへの最短距離」を主な副次指標にし、
       総距離指標はごく小さい重みの補助勾配として利用する。（囮ルートでの探索時間を浪費対策）
-   2. [新機能] options.mode で探索モードを明示指定可能に（'auto' / 'backtrack' / 'local' / 'brute'）。
+   2. options.mode で探索モードを明示指定可能（'auto' / 'backtrack' / 'local'）。
       ステージの性質によって得意な戦略が異なるため（例：迷路系は backtrack、色変換パネルが
       密結合したステージは local が安定することがある）、エディター側でステージ作成者が
       使い分けたり、比較検証したりできるようにした。
@@ -235,9 +240,7 @@ const CHANNEL_BIT = { R: 1, G: 2, B: 4 };
 
 function backtrackSolveAllChannels(baseCtx, order, timeLimitMs, alwaysShuffle) {
   const { level, setVar, domains } = baseCtx;
-  const elementAt = (x, y) => level.elements.find(e => e.x === x && e.y === y);
-  const goalAt = (x, y) => level.goals.find(g => g.x === x && g.y === y);
-  const isWall = (x, y) => level.walls.some(w => w[0] === x && w[1] === y);
+  const { isWall, elementAt, goalAt } = makeLevelLookup(level);
   const start = Date.now();
   const deadline = start + Math.max(0, timeLimitMs);
 
@@ -417,7 +420,7 @@ function backtrackSolveAllChannels(baseCtx, order, timeLimitMs, alwaysShuffle) {
  * @param {object} level - beam-engine が扱う level オブジェクト（size, walls, elements, sources, goals）
  * @param {object} [options]
  * @param {number} [options.timeLimitMs] - 探索にかける時間の上限（ミリ秒）
- * @param {'auto'|'backtrack'|'local'|'brute'} [options.mode] - 探索モード（既定 'auto'）。
+ * @param {'auto'|'backtrack'|'local'} [options.mode] - 探索モード（既定 'auto'）。
  *   - 'auto'      : 下の3戦略を状況に応じて順に試す。基本的にはこれを使えばよい。
  *   - 'backtrack' : 光線追跡バックトラッキング探索のみを使う。壁やミラーで経路がほぼ
  *                   一本道に絞られる「迷路系」ステージ（おとり経路があるものを含む）に強い。
@@ -425,8 +428,6 @@ function backtrackSolveAllChannels(baseCtx, order, timeLimitMs, alwaysShuffle) {
  *   - 'local'     : min-conflicts風の山登り法のみを使う。色変換パネルが密結合していて
  *                   バックトラッキングの前提（チャンネルごとの独立性）が崩れているステージ
  *                   （変換パネルが多いステージ等）に強い。
- *   - 'brute'     : 組み合わせ数の上限を無視して全探索する（デバッグ・小規模ステージ検証用。
- *                   変数が多いステージでは時間切れになりうる）。
  * @returns {{solved:boolean, mirrorStates:object, converterStates:object, sourceStates:object, penalty:number, strategyUsed:string}}
  */
 function solveLevel(level, options) {
@@ -508,15 +509,6 @@ function solveLevel(level, options) {
     return null;
   }
 
-  if (mode === 'brute') {
-    const res = searchAssignment({
-      domains, setVar, getVar, freeVarIds: allVarIds, state: freshState(),
-      evaluate: evalFn, timeLimitMs: totalTimeLimitMs, bruteForceLimit: Infinity,
-    });
-    if (considerResult(res)) return Object.assign({ solved: true, penalty: 0, strategyUsed: 'brute' }, res.state);
-    return Object.assign({ solved: false, penalty: overallBestPenalty, strategyUsed: 'brute' }, overallBest || freshState());
-  }
-
   if (mode === 'local') {
     const res = searchAssignment({
       domains, setVar, getVar, freeVarIds: allVarIds, state: freshState(),
@@ -534,30 +526,34 @@ function solveLevel(level, options) {
 
   // ---- mode: 'auto'（既定）----
 
-  // 戦略1：軽い全変数探索をごく短時間だけ試す（変数が少ないステージはこれだけで一発）
-  const quickShare = Math.min(Math.floor(totalTimeLimitMs * 0.2), 1000);
-  const genericRes = searchAssignment({
-    domains, setVar, getVar,
-    freeVarIds: allVarIds,
-    state: freshState(),
-    evaluate: evalFn,
-    timeLimitMs: Math.max(200, Math.min(quickShare, overallDeadline - Date.now())),
-    bruteForceLimit: SOLVER_BRUTE_FORCE_LIMIT,
-  });
-  if (considerResult(genericRes)) {
-    return Object.assign({ solved: true, penalty: 0, strategyUsed: 'generic' }, genericRes.state);
+  // 戦略1：光線追跡バックトラッキング探索（ステージの種類を問わず常に試す）。
+  // 大半のステージはこれだけで解け、かつ他の2戦略より高速に解けることをベンチマークで確認済みのため、
+  // まずこれに時間予算の大半を割く。前提（チャンネルごとの独立性）が崩れているステージでは
+  // 決定的な全探索が早期に「解なし」を確定させるため、割り当てた時間を無駄に使い切ることはない。
+  const backtrackDeadline = Math.min(overallDeadline, Date.now() + Math.floor(totalTimeLimitMs * 0.7));
+  const backtrackRes = runBacktrackPhase(backtrackDeadline);
+  if (backtrackRes) {
+    return Object.assign({ solved: true, penalty: 0, strategyUsed: 'backtrack' }, backtrackRes.state);
   }
 
-  // 戦略2：光線追跡バックトラッキング探索（ステージの種類を問わず常に試す）
+  // 戦略2：軽い全変数探索をごく短時間だけ試す（色変換パネルが密結合していて戦略1の前提が
+  // 崩れているステージなど、戦略1が不得意なケースを短時間で拾う保険）
   if (Date.now() < overallDeadline) {
-    const decompDeadline = Math.min(overallDeadline, Date.now() + Math.floor(totalTimeLimitMs * 0.6));
-    const res = runBacktrackPhase(decompDeadline);
-    if (res) {
-      return Object.assign({ solved: true, penalty: 0, strategyUsed: 'backtrack' }, res.state);
+    const quickShare = Math.min(Math.floor(totalTimeLimitMs * 0.2), 1000);
+    const genericRes = searchAssignment({
+      domains, setVar, getVar,
+      freeVarIds: allVarIds,
+      state: freshState(),
+      evaluate: evalFn,
+      timeLimitMs: Math.max(200, Math.min(quickShare, overallDeadline - Date.now())),
+      bruteForceLimit: SOLVER_BRUTE_FORCE_LIMIT,
+    });
+    if (considerResult(genericRes)) {
+      return Object.assign({ solved: true, penalty: 0, strategyUsed: 'generic' }, genericRes.state);
     }
   }
 
-  // 戦略3：残り時間を通常のローカルサーチに使う（保険。戦略1の結果から再開）
+  // 戦略3：残り時間を通常のローカルサーチに使う（最終手段。ここまでの最良状態から再開）
   if (Date.now() < overallDeadline) {
     const fallbackState = overallBest ? cloneState(overallBest) : freshState();
     const res = searchAssignment({

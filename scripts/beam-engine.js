@@ -41,6 +41,17 @@ function isFrontSide(dx, dy, lineAngle) {
   return dx * nx + dy * ny >= -1e-9;
 }
 
+// 座標→要素の参照を毎回 level.walls/elements/goals から線形探索する処理は、
+// ビーム追跡（traceAll）とバックトラッキング探索（solver.js）の両方で必要になる。
+// 探索ロジック自体は両者で異なるが、この参照処理だけは全く同一なので共通化する。
+function makeLevelLookup(level) {
+  return {
+    isWall: (x, y) => level.walls.some(w => w[0] === x && w[1] === y),
+    elementAt: (x, y) => level.elements.find(e => e.x === x && e.y === y),
+    goalAt: (x, y) => level.goals.find(g => g.x === x && g.y === y),
+  };
+}
+
 function traceAll(level, mirrorStates, converterStates, sourceStates){
   const goalHits = {};
   const visited = new Set();
@@ -48,9 +59,7 @@ function traceAll(level, mirrorStates, converterStates, sourceStates){
   let totalSteps = 0;
   const LIMIT = 4000;
 
-  const isWall = (x,y) => level.walls.some(w=>w[0]===x&&w[1]===y);
-  const elementAt = (x,y) => level.elements.find(e=>e.x===x&&e.y===y);
-  const goalAt = (x,y) => level.goals.find(g=>g.x===x&&g.y===y);
+  const { isWall, elementAt, goalAt } = makeLevelLookup(level);
 
   function walk(x0,y0,dx,dy,color,sourceId,startDist){
     startDist = startDist || 0;
