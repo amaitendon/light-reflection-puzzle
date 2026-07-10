@@ -273,6 +273,30 @@
       "difficulty": 3,
       "tags": [],
       "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/51-06-青い街灯.json",
+      "title": "51-06-青い街灯",
+      "difficulty": 2,
+      "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/51-07-黄色い街灯.json",
+      "title": "51-07-黄色い街灯",
+      "difficulty": 2,
+      "tags": [],
+      "description": ""
+    },
+    {
+      "id": "stage-001",
+      "file": "stages/51-08-逃走.json",
+      "title": "51-08-逃走",
+      "difficulty": 2,
+      "tags": [],
+      "description": ""
     }
   ]
 }
