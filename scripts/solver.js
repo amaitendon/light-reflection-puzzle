@@ -150,7 +150,7 @@ function searchAssignment(ctx) {
     let found = null;
     (function dfs(idx) {
       if (found || timedOut) return;
-      if ((idx & 0x3ff) === 0 && Date.now() > deadline) { timedOut = true; return; }
+      if (Date.now() > deadline) { timedOut = true; return; }
       if (idx === freeVarIds.length) {
         const { solved } = evaluate(state);
         if (solved) found = cloneState(state);
