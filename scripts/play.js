@@ -226,10 +226,9 @@ function rotateSource(id, arrowEl){
   const next = cur + 90;
   arrowEl.style.transform = `translate(-30%,-50%) rotate(${next}deg)`;
   arrowEl.dataset.deg = next;
-  const dirOrder = ['right', 'down', 'left', 'up'];
   const curDir = sourceStates[id];
-  const curIdx = dirOrder.indexOf(curDir);
-  const nextDir = dirOrder[(curIdx + 1) % 4];
+  const curIdx = SOURCE_DIR_ORDER.indexOf(curDir);
+  const nextDir = SOURCE_DIR_ORDER[(curIdx + 1) % SOURCE_DIR_ORDER.length];
   sourceStates[id] = nextDir;
   recompute();
 }

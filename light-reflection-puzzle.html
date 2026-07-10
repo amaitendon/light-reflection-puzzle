@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+<!-- ツール説明は項目名のみとし、文章での説明は禁止。hint不要。文字によりレイアウトがずれて作業の邪魔になるため -->
 <div class="stage">
   <header>
     <div>
@@ -44,6 +44,7 @@
         <button class="tool-btn" data-tool="converter"><span class="tool-swatch converter"></span>色変換パネル</button>
         <button class="tool-btn" data-tool="source"><span class="tool-swatch source"></span>光源</button>
         <button class="tool-btn" data-tool="goal"><span class="tool-swatch goal"></span>ゴール</button>
+        <button class="tool-btn" data-tool="recolor"><span class="tool-swatch recolor"></span>色編集</button>
         <button class="tool-btn" data-tool="erase"><span class="tool-swatch erase"></span>消す</button>
         <button class="tool-btn" data-tool="select"><span class="tool-swatch select"></span>範囲選択</button>
       </div>
@@ -59,6 +60,10 @@
         <span class="toolbar-label">色</span>
         <div class="color-picker" id="colorPicker"></div>
       </div>
+      <div class="toolbar-row" id="recolorSettingsRow" style="display:none;">
+        <span class="toolbar-label">色</span>
+        <div class="color-picker" id="recolorColorPicker"></div>
+      </div>
       <div class="toolbar-row" id="sourceSettingsRow" style="display:none;">
         <div class="source-settings">
           <span class="toolbar-label" style="min-width:auto;">向き</span>
@@ -71,6 +76,10 @@
           <label class="toggle-label">
             <input type="checkbox" id="sourceRotatable">
             <span>回転可能</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="sourceDirCycleMode" checked>
+            <span>向き順送りモード</span>
           </label>
           <span class="toolbar-label" style="min-width:auto;">色</span>
           <div class="color-picker" id="sourceColorPicker"></div>
@@ -104,7 +113,7 @@
         <div class="converter-settings" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
           <label class="toggle-label">
             <input type="checkbox" id="converterInteractive">
-            <span>プレイ中にON/OFF可能</span>
+            <span>ON/OFF可能</span>
           </label>
           <span class="toolbar-label" style="margin-left: 10px;">変換タイプ:</span>
           <label class="toggle-label">

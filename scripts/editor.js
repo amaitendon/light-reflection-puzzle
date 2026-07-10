@@ -33,6 +33,10 @@ let mirrorDoubleSided = true;
 let mirrorFilterColor = 7;
 let mirrorAngleOnlyMode = false;
 let sourceRotatable = false;
+// デフォルトで有効：配置済みの光源をクリックした際、色や回転可否は維持したまま
+// 向き（上下左右）だけを順番に切り替える編集モード。
+let sourceDirCycleMode = true;
+let recolorColor = 7;
 
 let isDragging = false;
 let lastErasedCell = null;
@@ -134,7 +138,9 @@ const mirrorRotatableCheck = $('#mirrorRotatable');
 const mirrorDoubleSidedCheck = $('#mirrorDoubleSided');
 const mirrorFilterColorPicker = $('#mirrorFilterColorPicker');
 const mirrorAngleOnlyModeCheck = $('#mirrorAngleOnlyMode');
-const mirrorAngleOnlyHint = $('#mirrorAngleOnlyHint');
+
+const recolorSettingsRow = $('#recolorSettingsRow');
+const recolorColorPicker = $('#recolorColorPicker');
 
 let converterInteractive = false;
 let converterType = 'replace';
@@ -156,10 +162,16 @@ document.querySelectorAll('input[name="converterType"]').forEach(radio => {
 const sourceSettingsRow = $('#sourceSettingsRow');
 const sourceColorPicker = $('#sourceColorPicker');
 const sourceRotatableCheck = $('#sourceRotatable');
+const sourceDirCycleModeCheck = $('#sourceDirCycleMode');
 
 sourceRotatableCheck.checked = sourceRotatable;
 sourceRotatableCheck.addEventListener('change', () => {
   sourceRotatable = sourceRotatableCheck.checked;
+});
+
+sourceDirCycleModeCheck.checked = sourceDirCycleMode;
+sourceDirCycleModeCheck.addEventListener('change', () => {
+  sourceDirCycleMode = sourceDirCycleModeCheck.checked;
 });
 
 
@@ -184,18 +196,21 @@ function setActiveSwatch(container, bits){
   });
 }
 
-// 光源色・パネル色・ミラーフィルター色をまとめて更新し、各カラーピッカーの見た目も同期する。
+// 光源色・パネル色・ミラーフィルター色・色編集ツールの色をまとめて更新し、各カラーピッカーの見た目も同期する。
 function setSharedColor(bits){
   currentColor = bits;
   mirrorFilterColor = bits;
+  recolorColor = bits;
   setActiveSwatch(colorPicker, bits);
   setActiveSwatch(mirrorFilterColorPicker, bits);
   setActiveSwatch(sourceColorPicker, bits);
+  setActiveSwatch(recolorColorPicker, bits);
 }
 
 buildColorSwatchPicker(colorPicker, bits => { setSharedColor(bits); });
 buildColorSwatchPicker(mirrorFilterColorPicker, bits => { setSharedColor(bits); });
 buildColorSwatchPicker(sourceColorPicker, bits => { setSharedColor(bits); });
+buildColorSwatchPicker(recolorColorPicker, bits => { setSharedColor(bits); });
 setSharedColor(currentColor); // 初期値（白）を各ピッカーに反映
 
 function setMirrorOrientActive(angle){
@@ -226,6 +241,7 @@ document.querySelectorAll('.tool-btn').forEach(btn => {
     sourceSettingsRow.style.display = currentTool==='source' ? 'flex' : 'none';
     mirrorSettingsRow.style.display = currentTool==='mirror' ? 'flex' : 'none';
     converterSettingsRow.style.display = currentTool==='converter' ? 'flex' : 'none';
+    recolorSettingsRow.style.display = currentTool==='recolor' ? 'flex' : 'none';
     selectionRow.style.display = currentTool==='select' ? 'flex' : 'none';
     if (currentTool !== 'select'){
       pasteMode = false;
@@ -257,7 +273,6 @@ function isMirrorFilterActive(bits){ return bits !== 7; }
 
 mirrorAngleOnlyModeCheck.addEventListener('change', () => {
   mirrorAngleOnlyMode = mirrorAngleOnlyModeCheck.checked;
-  mirrorAngleOnlyHint.style.display = mirrorAngleOnlyMode ? 'inline' : 'none';
 });
 
 let dragSetupDone = false;
@@ -586,9 +601,18 @@ function onEditorCellClick(x,y){
     withHistory(() => {
       const srcHere = draft.sources.find(s=>s.x===x&&s.y===y);
       if (srcHere){
-        srcHere.color = currentColor;
-        srcHere.rotatable = sourceRotatable;
-        srcHere.dir = currentDir;
+        const isSameKind = srcHere.color === currentColor && srcHere.rotatable === sourceRotatable;
+        if (sourceDirCycleMode && isSameKind){
+          // 向き順送りモード：選択中の色・回転可否と一致する光源だけが対象。
+          // 色・回転可否など既存の設定は維持し、向きだけ時計回りに1段階進める
+          const idx = SOURCE_DIR_ORDER.indexOf(srcHere.dir);
+          srcHere.dir = SOURCE_DIR_ORDER[(idx + 1 + SOURCE_DIR_ORDER.length) % SOURCE_DIR_ORDER.length];
+        } else {
+          // 色または回転可否が違う光源（＝別の種類）をクリックした場合は、現在のツール設定で上書きする
+          srcHere.color = currentColor;
+          srcHere.rotatable = sourceRotatable;
+          srcHere.dir = currentDir;
+        }
       } else {
         clearCellInDraft(x,y);
         draft.sources.push({
@@ -608,6 +632,27 @@ function onEditorCellClick(x,y){
     withHistory(() => {
       clearCellInDraft(x,y);
       draft.goals.push({id:nextId(), x, y, color:currentColor});
+    });
+    renderEditor(); return;
+  }
+
+  if (currentTool==='recolor'){
+    // 色編集ツール：向き・回転可否・両面反射など他の設定はいっさい変更せず、色だけを差し替える
+    withHistory(() => {
+      const m = draft.elements.find(e=>e.x===x&&e.y===y);
+      if (m && m.kind==='mirror'){
+        m.filterColor = isMirrorFilterActive(recolorColor) ? recolorColor : null;
+        return;
+      }
+      if (m && m.kind==='converter'){
+        m.color = recolorColor;
+        return;
+      }
+      const s = draft.sources.find(ss=>ss.x===x&&ss.y===y);
+      if (s){ s.color = recolorColor; return; }
+      const g = draft.goals.find(gg=>gg.x===x&&gg.y===y);
+      if (g){ g.color = recolorColor; return; }
+      toast('このマスには色を変更できる要素がありません');
     });
     renderEditor(); return;
   }

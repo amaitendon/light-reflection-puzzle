@@ -189,6 +189,7 @@ h1{ margin:0; font-size:22px; letter-spacing:0.08em; font-weight:700; color:var(
 .tool-swatch.erase{ background:var(--panel-3); }
 .tool-swatch.erase::after{ content:"×"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--ink-dim); }
 .tool-swatch.select{ background:var(--panel-3); border-style:dashed; border-color:var(--cyan); }
+.tool-swatch.recolor{ background:conic-gradient(from 0deg, #ff5a5a, #ffd15a, #5aff8a, #5ad1ff, #7a5aff, #ff5ae0, #ff5a5a); border-color:rgba(255,255,255,0.35); }
 
 .cell.selected{ background:rgba(99,230,255,0.16); box-shadow:inset 0 0 0 2px var(--cyan); z-index:2; }
 .cell.paste-armed{ cursor:copy; }

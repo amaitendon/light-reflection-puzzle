@@ -1,6 +1,8 @@
 /* ================= beam engine ================= */
 const DIRS = { right:[1,0], left:[-1,0], down:[0,1], up:[0,-1] };
 const DIR_ANGLE = { right:0, down:90, left:180, up:270 };
+// 光源の向きを時計回りに1段階ずつ進めるときに使う共通の並び順（エディター・プレイ両方で使用）
+const SOURCE_DIR_ORDER = ['right', 'down', 'left', 'up'];
 const MIRROR_ROTATION_STEPS = [0, 45, 90, 135, 180, 225, 270, 315];
 
 function normalizeMirrorAngle(angle) {
